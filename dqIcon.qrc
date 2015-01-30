@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>DGlogoOrange.png</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>D410-b-12.bdf</file>
+    </qresource>
+</RCC>
