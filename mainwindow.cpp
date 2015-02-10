@@ -38,7 +38,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     // install our keyboard handler
     keyHandler = new KeyBoardHandler( this, status );
     crt->installEventFilter( keyHandler );
-    crt->grabKeyboard();
+    // crt->grabKeyboard();
+    crt->setFocusPolicy( Qt::StrongFocus );
 
     setupToolbar();
 
@@ -230,8 +231,8 @@ void MainWindow::showAboutDialog() {
     QMessageBox::about( this,
                         "About DasherQ",
                         "<center><b>DasherQ</b><br<br>"
-                        "&copy; 2014 Steve Merrony<br><br>"
-                        "Version 0.6<br><br>"
+                        "&copy; 2015 Steve Merrony<br><br>"
+                        "Version 0.7<br><br>"
                         "Please see<br>"
                         "<a href='http://www.stephenmerrony.co.uk/dg/'>http://www.stephenmerrony.co.uk/dg/</a><br>"
                         "for more information</center>" );
