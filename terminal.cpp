@@ -79,13 +79,13 @@ void Terminal::scrollUp( int rows ) {
 void Terminal::selfTest() {
 
     char testlineHRule1[] = "12345678901234567890123456789012345678901234567890123456789012345678901234567890";
-    char testlineHRule2[] = "         1         2         3         4         5         6         7         8";
+    char testlineHRule2[] = "2        1         2         3         4         5         6         7         8";
     char testline1[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567489!\"$%^.";
-    char testlineN[] = "Normal  : ";
-    char testlineD[] = "Dim     : ";
-    char testlineB[] = "Blink   : ";
-    char testlineU[] = "Under   : ";
-    char testlineR[] = "Reverse : ";
+    char testlineN[] = "3 Normal : ";
+    char testlineD[] = "4 Dim    : ";
+    char testlineB[] = "5 Blink  : ";
+    char testlineU[] = "6 Under  : ";
+    char testlineR[] = "7 Reverse: ";
 
     QByteArray qba;
 
@@ -127,6 +127,12 @@ void Terminal::selfTest() {
     qba.append( CMD );
     qba.append( 'E' );
     qba.append( NL );
+
+    for (int l = 8; l < 24; l++ ) {
+        qba.append( QString::number( l ) );
+        qba.append( NL );
+    }
+    qba.append( QString::number( 24 ) );
 
     processHostData( qba );
 }
