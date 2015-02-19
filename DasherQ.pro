@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     serialconnectdialog.cpp \
     networkconnectdialog.cpp \
     telnetconnection.cpp \
-    terminal.cpp
+    terminal.cpp \
+    fkeymatrix.cpp
 
 HEADERS  += mainwindow.h \
     status.h \
@@ -35,7 +36,8 @@ HEADERS  += mainwindow.h \
     serialconnectdialog.h \
     networkconnectdialog.h \
     telnetconnection.h \
-    terminal.h
+    terminal.h \
+    fkeymatrix.h
 
 FORMS    +=
 
@@ -45,3 +47,9 @@ OTHER_FILES += \
 
 RESOURCES += \
     dqIcon.qrc
+
+RC_FILE = DasherQ.rc
+
+DISTFILES += \
+    DGlogoOrange.ico \
+    DasherQ.rc

@@ -165,21 +165,10 @@ void KeyBoardHandler::keyReleased( QEvent *event ) {
         status->shift_pressed = false;
         return;
         break;
+    default:
+        unsigned char ch = keyEvent->text().toLatin1()[0];
+        emit keySignal( ch );
+        break;
     }
-
-    unsigned char ch = keyEvent->text().toLatin1()[0];
-
-//    if (ch == 10) {
-//        // convert plain LF to CR(/LF) for Dasher(/NVT) compliance
-//        emit keySignal( 13 );
-//        if (status->connection == Status::TELNET_CONNECTED) {
-//            emit keySignal( 10 );
-//        }
-//    } else {
-//        //emit keySignal( ch );
-//        emit keySignal( ch );
-//        //qDebug() << "Keyboard handler posted char: " << ch;
-//    }
-    emit keySignal( ch );
 
 }
