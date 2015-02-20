@@ -11,6 +11,7 @@
 #include <QTextStream>
 
 #include "crt.h"
+#include "fkeymatrix.h"
 #include "keyboardhandler.h"
 #include "networkconnectdialog.h"
 #include "serialconnectdialog.h"
@@ -58,6 +59,7 @@ private:
 
     Status *status;
 
+    FkeyMatrix *fKeyMatrix;
     Crt *crt;
     KeyBoardHandler *keyHandler;
 
