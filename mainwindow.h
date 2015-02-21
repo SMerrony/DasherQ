@@ -50,10 +50,12 @@ private slots:
     void localPrintRequest();
     void localEcho( char );
     void logChar( char );
+    void sendFile();
 
 signals:
     void hostDataSignal( QByteArray );
-    
+    void keySignal( char );
+
 private:
     QQueue<unsigned char> *fromHostQ;
 

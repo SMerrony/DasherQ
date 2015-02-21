@@ -9,6 +9,7 @@
 #include <QPrintDialog>
 #include <QPrinter>
 #include <QStatusBar>
+#include <QThread>
 #include <QTimer>
 #include <QToolBar>
 #include <QUrl>
@@ -44,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     setupToolbar();
 
     // start in local mode
+    connect( this, SIGNAL(keySignal(char)), this, SLOT(localEcho(char)) );
     connect( keyHandler, SIGNAL(keySignal(char)), this, SLOT(localEcho(char)) );
     connect( this, SIGNAL(hostDataSignal(QByteArray)), terminal, SLOT(processHostData(QByteArray)) );
 
@@ -136,9 +138,11 @@ void MainWindow::openSerialPort() {
                                              )
             ){
             // stop local echoing
+            disconnect( this, SIGNAL(keySignal(char)), this, SLOT(localEcho(char)) );
             disconnect( keyHandler, SIGNAL(keySignal(char)), this, SLOT(localEcho(char)) );
             disconnect( this, SIGNAL(hostDataSignal(QByteArray)), terminal, SLOT(processHostData(QByteArray)) );
 
+            connect( this, SIGNAL(keySignal(char)), serialConnection, SLOT(writeCharSerial(char)) );
             connect( terminal, SIGNAL(keySignal(char)), serialConnection, SLOT(writeCharSerial(char)) );
             connect( keyHandler, SIGNAL(keySignal(char)), serialConnection, SLOT(writeCharSerial(char)) );
             connect( serialConnection, SIGNAL(hostDataSignal(QByteArray)), terminal, SLOT(processHostData(QByteArray)) );
@@ -249,6 +253,8 @@ void MainWindow::setupMenuBar() {
     loggingAction->setCheckable( true );
     loggingAction->setChecked( false );
     connect( loggingAction, SIGNAL( triggered() ), this, SLOT( toggleLogging() ) );
+    action = menu->addSeparator();
+    menu->addAction( "Send File", this, SLOT(sendFile()));
     action = menu->addSeparator();
     menu->addAction( "&Quit", this, SLOT(close()));
 
@@ -434,4 +440,27 @@ void MainWindow::localEcho( char c ) {
 /* slot to log a character */
 void MainWindow::logChar( char ch ) {
     loggingStream << ch;
+}
+
+/* slot to send a local file to the host */
+void MainWindow::sendFile() {
+
+    QString fileName = QFileDialog::getOpenFileName( this, "Choose File to Send" );
+
+    if (fileName.isEmpty())
+        return;
+    else {
+        QFile file( fileName );
+        if (!file.open( QIODevice::ReadOnly )) {
+            QMessageBox::information( this, "Unable to open file", file.errorString() );
+            return;
+        }
+        QByteArray blob = file.readAll();
+        for (int i = 0; i < blob.size(); i++) {
+            emit keySignal( blob.at( i ) );
+            // QThread::msleep( 10 );
+        }
+        file.close();
+    }
+
 }

@@ -23,7 +23,7 @@ void KeyBoardHandler::fKeyEventHandler() {
 
     if (fKeyLabel.compare( "Brk" ) == 0) {
         qDebug() << "Break requested by user";
-        emit keySignal( 2 ); // special CMD_BREAK indicator (trapped by connection handler)
+        emit keySignal( 0 ); // special CMD_BREAK indicator (trapped by connection handler)
     } else if (fKeyLabel.compare( "F1" ) == 0) {
         emit keySignal( 30 );
         emit keySignal( 113 + modifier );

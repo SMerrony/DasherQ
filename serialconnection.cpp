@@ -58,11 +58,12 @@ void SerialConnection::readSerialData() {
 // slot to write char to serial port
 void SerialConnection::writeCharSerial( char b ) {
 
-    if (b == 2) {
+    if (b == 0) {
         serialPort->sendBreak( 110 );
     } else {
         serialPort->write( QByteArray( 1, b ) );
     }
+    //serialPort->waitForBytesWritten( -1 );
 }
 
 void SerialConnection::closeSerialPort() {
