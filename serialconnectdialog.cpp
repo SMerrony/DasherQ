@@ -40,21 +40,18 @@ SerialConnectDialog::SerialConnectDialog(QWidget *parent) :
     parityComboBox->addItem( "Even", QSerialPort::EvenParity );
     parityComboBox->addItem( "Mark", QSerialPort::MarkParity );
     parityComboBox->addItem( "Space", QSerialPort::SpaceParity );
-    //parityComboBox->setEnabled( false ); // TODO: parity
     fLayout->addRow( "Parity:", parityComboBox );
 
     stopComboBox = new QComboBox;
     stopComboBox->addItem( "1", QSerialPort::OneStop );
     stopComboBox->addItem( "1.5", QSerialPort::OneAndHalfStop );
     stopComboBox->addItem( "2", QSerialPort::TwoStop );
-    //stopComboBox->setEnabled( false ); // TODO: stopbits
     fLayout->addRow( "Stop bits:", stopComboBox );
 
     flowComboBox = new QComboBox;
-    flowComboBox->addItem( "None" );
-    flowComboBox->addItem( "Hardware (RTS/CTS)" );
-    flowComboBox->addItem( "Software (XON/XOFF)" );
-    flowComboBox->setEnabled( false ); // TODO: flow control
+    flowComboBox->addItem( "None", QSerialPort::NoFlowControl );
+    flowComboBox->addItem( "Hardware (RTS/CTS)", QSerialPort::HardwareControl );
+    flowComboBox->addItem( "Software (XON/XOFF)", QSerialPort::SoftwareControl );
     fLayout->addRow( "Flow Control:", flowComboBox );
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox( QDialogButtonBox::Ok | QDialogButtonBox::Cancel );
