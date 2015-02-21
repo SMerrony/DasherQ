@@ -33,8 +33,8 @@ public:
     static const unsigned char BLINK_OFF 	=  15;
     static const unsigned char WRITE_WINDOW_ADDR =  16;
     static const unsigned char PRINT_WINDOW	=  17;
-    static const unsigned char ROLL_ENABLE  =  18;
-    static const unsigned char ROLL_DISABLE =  19;
+    static const unsigned char ROLL_ENABLE  =  18; // R
+    static const unsigned char ROLL_DISABLE =  19; // S (!)
     static const unsigned char UNDERSCORE_ON = 20;
     static const unsigned char UNDERSCORE_OFF = 21;
 
