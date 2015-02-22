@@ -1,18 +1,24 @@
 #ifndef FKEYMATRIX_H
 #define FKEYMATRIX_H
 
-#include <QWidget>
+#include <QDockWidget>
 
-class FkeyMatrix : public QWidget
+#include "keyboardhandler.h"
+
+class FkeyMatrix : public QDockWidget
 {
   Q_OBJECT
 public:
-  explicit FkeyMatrix(QWidget *parent = 0);
+  explicit FkeyMatrix( QWidget *parent, KeyBoardHandler *keyHandler );
   ~FkeyMatrix();
 
 signals:
 
 public slots:
+
+private:
+
+
 };
 
 #endif // FKEYMATRIX_H

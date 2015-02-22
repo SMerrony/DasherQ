@@ -69,7 +69,6 @@ private:
 
     void setupMenuBar();
     void setupStatusBar();
-    void setupToolbar();
 
     // some menus/actions that we need access to
     QMenu *serialMenu, *networkMenu;

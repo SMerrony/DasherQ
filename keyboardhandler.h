@@ -5,6 +5,7 @@
 #include <QEvent>
 #include <QObject>
 #include <QQueue>
+#include <QWidget>
 
 #include "status.h"
 
@@ -27,6 +28,7 @@ protected:
     bool eventFilter( QObject *obj, QEvent *event );
 
 private:
+    QWidget *myParent;
     Status *status;
     //QQueue<unsigned char> *fromKbdQ;
     QBuffer *fromKbdBuffer;

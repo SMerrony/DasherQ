@@ -39,10 +39,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     // install our keyboard handler
     keyHandler = new KeyBoardHandler( this, status );
     crt->installEventFilter( keyHandler );
-    // crt->grabKeyboard();
+    this->setFocusProxy( crt );             // pass focus to crt if mainwindow gets it
     crt->setFocusPolicy( Qt::ClickFocus );
 
-    setupToolbar();
+    fKeyMatrix = new FkeyMatrix( this, keyHandler );
+    fKeyMatrix->setFeatures( 0 );
+    addDockWidget( Qt::TopDockWidgetArea, fKeyMatrix);
 
     // start in local mode
     connect( this, SIGNAL(keySignal(char)), this, SLOT(localEcho(char)) );
@@ -347,75 +349,6 @@ void MainWindow::updateStatusBar() {
     }
 
     emulationStatusLabel->setText( 'D' + QString::number( status->emulation ) );
-}
-
-void MainWindow::setupToolbar() {
-
-    QToolBar *toolBar;
-    QAction *action;
-
-    toolBar = addToolBar( "Functions" );
-    action = toolBar->addAction( "Brk" );
-    connect( action, SIGNAL( triggered() ), keyHandler, SLOT( fKeyEventHandler( ) ) );
-    toolBar->addSeparator();
-    action = toolBar->addAction( "F1" );
-    action->setShortcut( Qt::Key_F1 );
-    connect( action, SIGNAL( triggered() ), keyHandler, SLOT( fKeyEventHandler( ) ) );
-    action = toolBar->addAction( "F2" );
-    action->setShortcut( Qt::Key_F2 );
-    connect( action, SIGNAL( triggered() ), keyHandler, SLOT( fKeyEventHandler( ) ) );
-    action = toolBar->addAction( "F3" );
-    action->setShortcut( Qt::Key_F3 );
-    connect( action, SIGNAL( triggered() ), keyHandler, SLOT( fKeyEventHandler( ) ) );
-    action = toolBar->addAction( "F4" );
-    action->setShortcut( Qt::Key_F4 );
-    connect( action, SIGNAL( triggered() ), keyHandler, SLOT( fKeyEventHandler( ) ) );
-    action = toolBar->addAction( "F5" );
-    action->setShortcut( Qt::Key_F5 );
-    connect( action, SIGNAL( triggered() ), keyHandler, SLOT( fKeyEventHandler( ) ) );
-    toolBar->addSeparator();
-    action = toolBar->addAction( "F6" );
-    action->setShortcut( Qt::Key_F6 );
-    connect( action, SIGNAL( triggered() ), keyHandler, SLOT( fKeyEventHandler( ) ) );
-    action = toolBar->addAction( "F7" );
-    action->setShortcut( Qt::Key_F7 );
-    connect( action, SIGNAL( triggered() ), keyHandler, SLOT( fKeyEventHandler( ) ) );
-    action = toolBar->addAction( "F8" );
-    action->setShortcut( Qt::Key_F8 );
-    connect( action, SIGNAL( triggered() ), keyHandler, SLOT( fKeyEventHandler( ) ) );
-    action = toolBar->addAction( "F9" );
-    action->setShortcut( Qt::Key_F9 );
-    connect( action, SIGNAL( triggered() ), keyHandler, SLOT( fKeyEventHandler( ) ) );
-    action = toolBar->addAction( "F10" );
-    action->setShortcut( Qt::Key_F10 );
-    connect( action, SIGNAL( triggered() ), keyHandler, SLOT( fKeyEventHandler( ) ) );
-    toolBar->addSeparator();
-    action = toolBar->addAction( "F11" );
-    action->setShortcut( Qt::Key_F12 );
-    connect( action, SIGNAL( triggered() ), keyHandler, SLOT( fKeyEventHandler( ) ) );
-    action = toolBar->addAction( "F12" );
-    action->setShortcut( Qt::Key_F12 );
-    connect( action, SIGNAL( triggered() ), keyHandler, SLOT( fKeyEventHandler( ) ) );
-    action = toolBar->addAction( "F13" );
-    connect( action, SIGNAL( triggered() ), keyHandler, SLOT( fKeyEventHandler( ) ) );
-    action = toolBar->addAction( "F14" );
-    connect( action, SIGNAL( triggered() ), keyHandler, SLOT( fKeyEventHandler( ) ) );
-    action = toolBar->addAction( "F15" );
-    connect( action, SIGNAL( triggered() ), keyHandler, SLOT( fKeyEventHandler( ) ) );
-    toolBar->addSeparator();
-    action = toolBar->addAction( "Erase Page" );
-    connect( action, SIGNAL( triggered() ), keyHandler, SLOT( fKeyEventHandler( ) ) );
-    action = toolBar->addAction( "CR" );
-    connect( action, SIGNAL( triggered() ), keyHandler, SLOT( fKeyEventHandler( ) ) );
-    action = toolBar->addAction( "Erase EOL" );
-    connect( action, SIGNAL( triggered() ), keyHandler, SLOT( fKeyEventHandler( ) ) );
-    toolBar->addSeparator();
-    action = toolBar->addAction( "Loc Pr" );
-    action->setShortcut( Qt::Key_Print );
-    connect( action, SIGNAL( triggered() ), keyHandler, SLOT( fKeyEventHandler( ) ) );
-    action = toolBar->addAction( "Hold" );
-    action->setShortcut( Qt::Key_Pause );
-    connect( action, SIGNAL( triggered() ), keyHandler, SLOT( fKeyEventHandler( ) ) );
 }
 
 void MainWindow::localPrintRequest() {

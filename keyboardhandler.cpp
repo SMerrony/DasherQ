@@ -5,6 +5,7 @@
 
 KeyBoardHandler::KeyBoardHandler( QObject *parent, Status *pStatus )
     : QObject( parent ) {
+    myParent = (QWidget *)parent;
     status = pStatus;
     qDebug() << "KeyboardHandler created";
 }
@@ -21,7 +22,7 @@ void KeyBoardHandler::fKeyEventHandler() {
 
     // qDebug() << "KeyboardHandler received fKeyEvent " << fKeyLabel;
 
-    if (fKeyLabel.compare( "Brk" ) == 0) {
+    if (fKeyLabel.compare( "Break" ) == 0) {
         qDebug() << "Break requested by user";
         emit keySignal( 0 ); // special CMD_BREAK indicator (trapped by connection handler)
     } else if (fKeyLabel.compare( "F1" ) == 0) {
@@ -69,13 +70,13 @@ void KeyBoardHandler::fKeyEventHandler() {
     } else if (fKeyLabel.compare( "F15" ) == 0) {
         emit keySignal( 30 );
         emit keySignal( 112 + modifier );
-    } else if (fKeyLabel.compare( "Erase Page" ) == 0) {
+    } else if (fKeyLabel.compare( "Er Pg" ) == 0) {
         emit keySignal( 12 );
     } else if (fKeyLabel.compare( "CR" ) == 0) {
         emit keySignal( 13 );
-    } else if (fKeyLabel.compare( "Erase EOL" ) == 0) {
+    } else if (fKeyLabel.compare( "ErEOL" ) == 0) {
         emit keySignal( 11 );
-    } else if (fKeyLabel.compare( "Loc Pr" ) == 0) {
+    } else if (fKeyLabel.compare( "LocPr" ) == 0) {
         emit localPrintRequest(); // signal that a print is requested
     } else if (fKeyLabel.compare( "Hold" ) == 0) {
         if (status->holding) {
@@ -88,6 +89,8 @@ void KeyBoardHandler::fKeyEventHandler() {
     } else {
         qDebug() << "KeyboardHandler: Warning - Unknown key event received " << fKeyLabel;
     }
+
+    myParent->setFocus();
 }
 
 bool KeyBoardHandler::eventFilter( QObject *obj, QEvent *event ) {
