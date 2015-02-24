@@ -136,6 +136,8 @@ FkeyMatrix::~FkeyMatrix()
 
 bool FkeyMatrix::loadTemplate( ) {
 
+    QString template_line;
+
     QString templateFileName = QFileDialog::getOpenFileName( this, "DasherQ Template", NULL, "Templates (*.txt)" );
     if (templateFileName == NULL) return false;
     QFile templateFile( templateFileName );
@@ -150,12 +152,23 @@ bool FkeyMatrix::loadTemplate( ) {
     templateLabel->setText( templateTitle );
     templateLabel2->setText( templateTitle );
 
+    // clear labels
     for (int k = 0; k < 15; k++) {
         for (int r = 3; r >= 0; r--) {
-            fKeyLabels[r][k]->setText( in.readLine().replace( "\\", "\n" ) );
+            fKeyLabels[r][k]->clear();
         }
     }
 
+    for (int k = 0; k < 15; k++) {
+        for (int r = 3; r >= 0; r--) {
+            template_line = in.readLine();
+            if (in.status() != QTextStream::Ok) goto fin;
+            if (template_line.length() > 0) {
+                fKeyLabels[r][k]->setText( template_line.replace( "\\", "\n" ) );
+            }
+        }
+    }
+fin:
     templateFile.close();
 
     return true;
