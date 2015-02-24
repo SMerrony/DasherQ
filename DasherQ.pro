@@ -43,7 +43,9 @@ FORMS    +=
 
 OTHER_FILES += \
     DGlogoOrange.png \
-    D410-b-12.bdf
+    D410-b-12.bdf \
+    SED_template.txt \
+    SMI_template.txt
 
 RESOURCES += \
     dqIcon.qrc

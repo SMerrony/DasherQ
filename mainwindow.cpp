@@ -34,8 +34,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
     setCentralWidget( crt );
 
-    setupMenuBar();
-
     // install our keyboard handler
     keyHandler = new KeyBoardHandler( this, status );
     crt->installEventFilter( keyHandler );
@@ -45,6 +43,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     fKeyMatrix = new FkeyMatrix( this, keyHandler );
     fKeyMatrix->setFeatures( 0 );
     addDockWidget( Qt::TopDockWidgetArea, fKeyMatrix);
+
+    setupMenuBar();
 
     // start in local mode
     connect( this, SIGNAL(keySignal(char)), this, SLOT(localEcho(char)) );
@@ -278,6 +278,11 @@ void MainWindow::setupMenuBar() {
 
     selfTestAction = menu->addAction( "Self-Test" );
     connect( selfTestAction, SIGNAL( triggered() ), this, SLOT( selfTest() ) );
+
+    action = menu->addSeparator();
+
+    loadTemplateAction = menu->addAction( "Load Template" );
+    connect( loadTemplateAction, SIGNAL( triggered() ), fKeyMatrix, SLOT( loadTemplate() ) );
 
     serialMenu = menuBar()->addMenu( "&Serial" );
     openSerialAction = serialMenu->addAction( "&Connect" );

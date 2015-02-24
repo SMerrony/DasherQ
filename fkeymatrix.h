@@ -2,6 +2,7 @@
 #define FKEYMATRIX_H
 
 #include <QDockWidget>
+#include <QLabel>
 
 #include "keyboardhandler.h"
 
@@ -14,10 +15,14 @@ public:
 
 signals:
 
-public slots:
+public slots:   
+    bool loadTemplate();
 
 private:
-
+    QString templateTitle;
+    QLabel *templateLabel, *templateLabel2;
+    QString fKeyStrings[4][15];
+    QLabel *fKeyLabels[4][15];
 
 };
 

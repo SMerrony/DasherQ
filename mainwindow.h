@@ -72,7 +72,7 @@ private:
 
     // some menus/actions that we need access to
     QMenu *serialMenu, *networkMenu;
-    QAction *loggingAction, *selfTestAction, *openSerialAction, *closeSerialAction, *openNetworkAction, *closeNetworkAction;
+    QAction *loggingAction, *selfTestAction, *loadTemplateAction, *openSerialAction, *closeSerialAction, *openNetworkAction, *closeNetworkAction;
 
     QLabel *onlineStatusLabel, *connectionStatusLabel, *emulationStatusLabel;
 

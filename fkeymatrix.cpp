@@ -1,6 +1,8 @@
+#include <QFile>
+#include <QFileDialog>
 #include <QGridLayout>
-#include <QLabel>
 #include <QPushButton>
+#include <QTextStream>
 
 #include "fkeymatrix.h"
 
@@ -39,6 +41,9 @@ FkeyMatrix::FkeyMatrix(QWidget *parent, KeyBoardHandler *keyHandler) : QDockWidg
     layout->addWidget( ctrlLabel2,      1, 7 );
     layout->addWidget( shiftLabel2,     2, 7 );
 
+    templateLabel = new QLabel();
+    layout->addWidget( templateLabel, 4, 7 );
+
     QPushButton *f6Button = new QPushButton( "F6" );
     connect( f6Button, SIGNAL(released()), keyHandler, SLOT( fKeyEventHandler()));
     layout->addWidget( f6Button, 4, 8 );
@@ -61,6 +66,9 @@ FkeyMatrix::FkeyMatrix(QWidget *parent, KeyBoardHandler *keyHandler) : QDockWidg
     layout->addWidget( ctrlShiftLabel3, 0, 13 );
     layout->addWidget( ctrlLabel3,      1, 13 );
     layout->addWidget( shiftLabel3,     2, 13 );
+
+    templateLabel2 = new QLabel();
+    layout->addWidget( templateLabel2, 4, 13 );
 
     QPushButton *f11Button = new QPushButton( "F11" );
     connect( f11Button, SIGNAL(released()), keyHandler, SLOT( fKeyEventHandler()));
@@ -91,18 +99,65 @@ FkeyMatrix::FkeyMatrix(QWidget *parent, KeyBoardHandler *keyHandler) : QDockWidg
     connect( erEOLButton, SIGNAL(released()), keyHandler, SLOT( fKeyEventHandler()));
     layout->addWidget( erEOLButton, 3, 19 );
 
+    for (int k = 0; k < 5; k++) {
+        for (int r = 0; r < 4; r++) {
+            fKeyLabels[r][k] = new QLabel();
+            layout->addWidget( fKeyLabels[r][k], r, k + 2 );
+        }
+    }
+    for (int k = 5; k < 10; k++) {
+        for (int r = 0; r < 4; r++) {
+            fKeyLabels[r][k] = new QLabel();
+            layout->addWidget( fKeyLabels[r][k], r, k + 3 );
+        }
+    }
+    for (int k = 10; k < 15; k++) {
+        for (int r = 0; r < 4; r++) {
+            fKeyLabels[r][k] = new QLabel();
+            layout->addWidget( fKeyLabels[r][k], r, k + 4 );
+        }
+    }
+
     layout->setMargin( 1 ); // minimize space around grid
     layout->setSpacing( 1 );
 
     this->setStyleSheet( "QPushButton { max-width: 35px }"
-                         "QLabel { max-width: 45px; qproperty-alignment: AlignCenter; }" );
+                         "QLabel { max-width: 45px; font-size: 7pt; qproperty-alignment: AlignCenter; color: white; background-color: gray;}" );
 
     dockWidget->setLayout( layout );
     setTitleBarWidget( dockWidget );  // Qt5 - cannot remove titlebar, so fill it with our contents to conceal it
+
 }
 
 FkeyMatrix::~FkeyMatrix()
 {
 
+}
+
+bool FkeyMatrix::loadTemplate( ) {
+
+    QString templateFileName = QFileDialog::getOpenFileName( this, "DasherQ Template", NULL, "Templates (*.txt)" );
+    if (templateFileName == NULL) return false;
+    QFile templateFile( templateFileName );
+    if (!templateFile.open( QFile::ReadOnly )) {
+        // qDebug() << "Could not open template file";
+        return false;
+    }
+
+    QTextStream in( &templateFile );
+
+    templateTitle = in.readLine();
+    templateLabel->setText( templateTitle );
+    templateLabel2->setText( templateTitle );
+
+    for (int k = 0; k < 15; k++) {
+        for (int r = 3; r >= 0; r--) {
+            fKeyLabels[r][k]->setText( in.readLine().replace( "\\", "\n" ) );
+        }
+    }
+
+    templateFile.close();
+
+    return true;
 }
 
