@@ -12,7 +12,7 @@ public:
                        };
     QString serialPort, remoteHost;
     bool logging;
-    bool control_pressed, shift_pressed, holding, dirty;
+    bool holding, dirty;
     ConnectionType connection;
     EmulationType emulation;
 

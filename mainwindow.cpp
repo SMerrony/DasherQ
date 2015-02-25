@@ -354,6 +354,7 @@ void MainWindow::updateStatusBar() {
     }
 
     emulationStatusLabel->setText( 'D' + QString::number( status->emulation ) );
+
 }
 
 void MainWindow::localPrintRequest() {

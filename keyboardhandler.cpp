@@ -1,5 +1,6 @@
 #include <QDebug>
 #include <QKeyEvent>
+#include <QGuiApplication>
 
 #include "keyboardhandler.h"
 
@@ -14,11 +15,10 @@ void KeyBoardHandler::fKeyEventHandler() {
 
     unsigned char modifier = 0;
 
-    if (status->control_pressed && status->shift_pressed) { modifier = -80; }  // Ctrl-Shift
-    if (status->control_pressed && !status->shift_pressed) { modifier = -64; } // Ctrl
-    if (!status->control_pressed && status->shift_pressed) { modifier = -16; } // Shift
-
     QString fKeyLabel = sender()->property("text").toString();
+
+    if (QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ShiftModifier)) { modifier -= 16; }
+    if (QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ControlModifier)) { modifier -= 64; }
 
     // qDebug() << "KeyboardHandler received fKeyEvent " << fKeyLabel;
 
@@ -100,27 +100,12 @@ bool KeyBoardHandler::eventFilter( QObject *obj, QEvent *event ) {
         keyReleased( event );
         return true;
     } else if (event->type() == QEvent::KeyPress) {
-        keyPressed( event );
+        // keyPressed( event );
         return true;
     }
     return false;  // let the system handle other events
 }
 
-void KeyBoardHandler::keyPressed( QEvent *event ) {
-
-    QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
-
-    switch( keyEvent->key() ) {
-    case Qt::ControlModifier:
-        status->control_pressed = true;
-        return;
-        break;
-    case Qt::ShiftModifier:
-        status->shift_pressed = true;
-        return;
-        break;
-    }
-}
 
 void KeyBoardHandler::keyReleased( QEvent *event ) {
 
@@ -161,11 +146,9 @@ void KeyBoardHandler::keyReleased( QEvent *event ) {
         break;
         // modifiers
     case Qt::Key_Control:
-        status->control_pressed = false;
         return;
         break;
     case Qt::Key_Shift:
-        status->shift_pressed = false;
         return;
         break;
     default:
