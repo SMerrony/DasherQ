@@ -396,9 +396,23 @@ void MainWindow::sendFile() {
         }
         QByteArray blob = file.readAll();
         for (int i = 0; i < blob.size(); i++) {
-            emit keySignal( blob.at( i ) );
-            // QThread::msleep( 10 );
+            char this_byte = blob.at( i );
+            // extract the nibbles, add to 'A' for safely transferable character
+            char upper_nibble = (this_byte>>4) + 65;
+            char lower_nibble = (this_byte & 0xf) + 65;
+            // send upper nibble
+            emit keySignal( upper_nibble );
+            // wait for ack
+
+            // send lower nibble
+            emit keySignal( lower_nibble );
+            // wait for ack
+
         }
+        // send EOF marker - we will use two letter Zs which would not otherwise appear
+        emit keySignal( 'Z' );
+	emit keySignal( 'Z' );
+
         file.close();
     }
 
