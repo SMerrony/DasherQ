@@ -63,7 +63,7 @@ void SerialConnection::writeCharSerial( char b ) {
     } else {
         serialPort->write( QByteArray( 1, b ) );
     }
-    serialPort->waitForBytesWritten( -1 ); // FIXME: Is this safe?
+    //serialPort->waitForBytesWritten( -1 ); // FIXME: Is this safe?
 }
 
 void SerialConnection::closeSerialPort() {

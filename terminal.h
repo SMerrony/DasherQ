@@ -12,8 +12,10 @@ class Terminal : public QObject {
 public:
     explicit Terminal( Status * );
 
-    static const int VISIBLE_ROWS = 24;
-    static const int VISIBLE_COLS = 80;
+    static const int MAX_COLS = 135;
+    static const int DEFAULT_COLS = 80;
+    static const int MAX_ROWS = 48;
+    static const int DEFAULT_ROWS = 24;
 
     static const unsigned char NUL			=  0;
     static const unsigned char PRINT_FORM	=  1;
@@ -50,10 +52,13 @@ public:
 
     static const unsigned char SPACE 		=  32;
 
+    int visible_rows;
+    int visible_cols;
+
     int cursorX, cursorY;
     bool roll_enabled, blinking_enabled, blinkState, protection_enabled;
 
-    Cell display[VISIBLE_ROWS][VISIBLE_COLS];
+    Cell display[MAX_ROWS][MAX_COLS];
 
 private:
     Status *status;
@@ -67,6 +72,7 @@ private:
     QByteArray bufferByteArray;
 
 public:
+    void resize( int rows, int cols );
     void clearLine( int line );
     void clearScreen();
     void eraseUnprotectedToEndOfScreen();

@@ -6,7 +6,7 @@
 
 QT       += core gui serialport network printsupport
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 5): QT += widgets
 
 TARGET = DasherQ
 TEMPLATE = app
@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     networkconnectdialog.cpp \
     telnetconnection.cpp \
     terminal.cpp \
-    fkeymatrix.cpp
+    fkeymatrix.cpp \
+    changesizedialog.cpp
 
 HEADERS  += mainwindow.h \
     status.h \
@@ -37,7 +38,8 @@ HEADERS  += mainwindow.h \
     networkconnectdialog.h \
     telnetconnection.h \
     terminal.h \
-    fkeymatrix.h
+    fkeymatrix.h \
+    changesizedialog.h
 
 FORMS    +=
 

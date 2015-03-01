@@ -10,6 +10,8 @@ Terminal::Terminal( Status *pStatus ){
     // get the shared objects
     status = pStatus;
 
+    visible_rows = DEFAULT_ROWS;
+    visible_cols = DEFAULT_COLS;
     cursorX = 0;
     cursorY = 0;
     roll_enabled = true;
@@ -31,8 +33,30 @@ Terminal::Terminal( Status *pStatus ){
     display[12][40].charValue = 'K';
 }
 
+void Terminal::resize( int rows, int cols ) {
+    visible_rows = rows;
+    visible_cols = cols;
+    cursorX = 0;
+    cursorY = 0;
+    roll_enabled = true;
+    blinking_enabled = true;
+    blinkState = false;
+    protection_enabled = false;
+    inCommand = false; inExtendedCommand = false;
+    inTelnetCommand = false; gotTelnetDo = false; gotTelnetWill = false;
+    readingWindowAddressX = false;
+    readingWindowAddressY = false;
+    blinking = false;
+    dimmed = false;
+    reversedVideo = false;
+    underscored = false;
+    protectd = false;
+
+    clearScreen();
+}
+
 void Terminal::clearLine( int line ) {
-    for (int cc = 0; cc < VISIBLE_COLS; cc++) {
+    for (int cc = 0; cc < visible_cols; cc++) {
         display[line][cc].clearToSpace();
     }
     inCommand = false;
@@ -45,19 +69,19 @@ void Terminal::clearLine( int line ) {
 }
 
 void Terminal::clearScreen() {
-    for (int row = 0; row < VISIBLE_ROWS; row++){
+    for (int row = 0; row < visible_rows; row++){
         clearLine( row );
     }
 }
 
 void Terminal::eraseUnprotectedToEndOfScreen() {
     // clear remainder of line
-    for (int x = cursorX; x < VISIBLE_COLS; x++) {
+    for (int x = cursorX; x < visible_cols; x++) {
         display[cursorY][x].clearToSpaceIfUnprotected();
     }
     // clear all lines below
-    for (int y = cursorY + 1; y < VISIBLE_ROWS; y++) {
-        for (int x = 0; x < VISIBLE_COLS; x++) {
+    for (int y = cursorY + 1; y < visible_rows; y++) {
+        for (int x = 0; x < visible_cols; x++) {
             display[y][x].clearToSpaceIfUnprotected();
         }
     }
@@ -66,13 +90,13 @@ void Terminal::eraseUnprotectedToEndOfScreen() {
 void Terminal::scrollUp( int rows ) {
     for (int times = 0; times < rows; times++) {
         // move each char up a row
-        for (int r = 1; r < VISIBLE_ROWS; r++) {
-            for (int c = 0; c < VISIBLE_COLS; c++) {
+        for (int r = 1; r < visible_rows; r++) {
+            for (int c = 0; c < visible_cols; c++) {
                 display[r-1][c].copy( display[r][c] );
             }
         }
         // clear the bottom row
-        clearLine( VISIBLE_ROWS - 1 );
+        clearLine( visible_rows - 1 );
     }
 }
 
@@ -128,11 +152,11 @@ void Terminal::selfTest() {
     qba.append( 'E' );
     qba.append( NL );
 
-    for (int l = 8; l < 24; l++ ) {
+    for (int l = 8; l < visible_rows; l++ ) {
         qba.append( QString::number( l ) );
         qba.append( NL );
     }
-    qba.append( QString::number( 24 ) );
+    qba.append( QString::number( visible_rows ) );
 
     processHostData( qba );
 }
@@ -230,8 +254,8 @@ void Terminal::processHostData( QByteArray hostDataBA ) {
 
             if (readingWindowAddressX) {
                 newXaddress = (int) ch & 0x7f;
-                if (newXaddress >= VISIBLE_COLS) {
-                    newXaddress -= VISIBLE_COLS;
+                if (newXaddress >= visible_cols) {
+                    newXaddress -= visible_cols;
                 }
                 if (newXaddress == 127) {
                     // special case - x stays the same - see D410 User Manual p.3-25
@@ -251,12 +275,12 @@ void Terminal::processHostData( QByteArray hostDataBA ) {
                     // special case - y stays the same - see D410 User Manual p.3-25
                     newYaddress = cursorY;
                 }
-                if (cursorY >= VISIBLE_ROWS) {
+                if (cursorY >= visible_rows) {
                     // see end of p.3-24 in D410 User Manual
                     if (roll_enabled) {
-                        scrollUp( cursorY - (VISIBLE_ROWS - 1));
+                        scrollUp( cursorY - (visible_rows - 1));
                     }
-                    cursorY -= VISIBLE_ROWS;
+                    cursorY -= visible_rows;
                 }
                 readingWindowAddressY = false;
                 skipChar = true;
@@ -436,17 +460,17 @@ void Terminal::processHostData( QByteArray hostDataBA ) {
                 skipChar = true;
                 break;
             case CURSOR_UP:
-                if (cursorY > 0) { cursorY--; } else { cursorY = VISIBLE_ROWS - 1; }
+                if (cursorY > 0) { cursorY--; } else { cursorY = visible_rows - 1; }
                 skipChar = true;
                 break;
             case CURSOR_DOWN:
-                if (cursorY < VISIBLE_ROWS - 2 ) { cursorY++; } else { cursorY = 0; }
+                if (cursorY < visible_rows - 2 ) { cursorY++; } else { cursorY = 0; }
                 skipChar = true;
                 break;
             case CURSOR_RIGHT:
-                if (cursorX < VISIBLE_COLS - 2) { cursorX++; } else {
+                if (cursorX < visible_cols - 2) { cursorX++; } else {
                     cursorX = 0;
-                    if (cursorY < VISIBLE_ROWS - 2 ) { cursorY++; } else { cursorY = 0; }
+                    if (cursorY < visible_rows - 2 ) { cursorY++; } else { cursorY = 0; }
                 }
                 skipChar = true;
                 break;
@@ -454,8 +478,8 @@ void Terminal::processHostData( QByteArray hostDataBA ) {
                 if (cursorX > 0) {
                     cursorX--;
                 } else {
-                    cursorX = VISIBLE_COLS - 1;
-                    if (cursorY > 0) { cursorY--; } else { cursorY = VISIBLE_ROWS - 1; }
+                    cursorX = visible_cols - 1;
+                    if (cursorY > 0) { cursorY--; } else { cursorY = visible_rows - 1; }
                 }
                 skipChar = true;
                 break;
@@ -472,7 +496,7 @@ void Terminal::processHostData( QByteArray hostDataBA ) {
                 skipChar = true;
                 break;
             case ERASE_EOL:
-                for (int col = cursorX; col < VISIBLE_COLS; col++) {
+                for (int col = cursorX; col < visible_cols; col++) {
                     display[cursorY][col].clearToSpace();
                 }
                 skipChar = true;
@@ -517,8 +541,8 @@ void Terminal::processHostData( QByteArray hostDataBA ) {
             if (skipChar) { continue; }
 
             // wrap due to hitting margin or new line?
-            if (cursorX == VISIBLE_COLS || ch == NL) {
-                if (cursorY == VISIBLE_ROWS - 1) { // hit bottom of screen
+            if (cursorX == visible_cols || ch == NL) {
+                if (cursorY == visible_rows - 1) { // hit bottom of screen
                     if (roll_enabled) {
                         scrollUp( 1 );
                     } else {

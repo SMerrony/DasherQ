@@ -16,6 +16,9 @@ class Crt : public QWidget
 public:
     explicit Crt(QWidget *parent, Terminal * );
 
+    static const int CHAR_WIDTH = 10;
+    static const int CHAR_HEIGHT = 12;
+
     void paintEvent(QPaintEvent *);
     void print( QPrinter * );
 
@@ -25,7 +28,6 @@ public slots:
 
 
 private:
-    int charWidth, charHeight;
     BDFfont *bdfFont;
     Terminal *terminal;
 

@@ -30,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     terminal = new Terminal( status );
 
     crt = new Crt( this, terminal );
-    crt->setMinimumSize( 800, 576 ); // was 800x576
+    crt->setMinimumSize( terminal->visible_cols * Crt::CHAR_WIDTH, terminal->visible_rows * Crt::CHAR_HEIGHT * 1.750 ); // was 800x576
 
     setCentralWidget( crt );
 
@@ -118,6 +118,17 @@ void MainWindow::setD200emulation() {
 
 void MainWindow::setD210emulation() {
     status->emulation = Status::D210;
+}
+
+void MainWindow::resize() {
+
+    ChangeSizeDialog *d = new ChangeSizeDialog( this );
+    if (d->exec()) {
+        terminal->resize( d->rowsComboBox->currentData().toInt(), d->colsComboBox->currentData().toInt() );
+        crt->setMinimumSize( terminal->visible_cols * Crt::CHAR_WIDTH, terminal->visible_rows * Crt::CHAR_HEIGHT * 1.750 ); // was 800x576
+        this->adjustSize();
+    }
+    delete d;
 }
 
 void MainWindow::selfTest() {
@@ -276,6 +287,10 @@ void MainWindow::setupMenuBar() {
 
     action = menu->addSeparator();
 
+    selfTestAction = menu->addAction( "Resize" );
+    connect( selfTestAction, SIGNAL( triggered() ), this, SLOT( resize() ) );
+    action = menu->addSeparator();
+
     selfTestAction = menu->addAction( "Self-Test" );
     connect( selfTestAction, SIGNAL( triggered() ), this, SLOT( selfTest() ) );
 
@@ -397,21 +412,22 @@ void MainWindow::sendFile() {
         QByteArray blob = file.readAll();
         for (int i = 0; i < blob.size(); i++) {
             char this_byte = blob.at( i );
-            // extract the nibbles, add to 'A' for safely transferable character
-            char upper_nibble = (this_byte>>4) + 65;
-            char lower_nibble = (this_byte & 0xf) + 65;
-            // send upper nibble
-            emit keySignal( upper_nibble );
-            // wait for ack
+//            // extract the nibbles, add to 'A' for safely transferable character
+//            char upper_nibble = (this_byte>>4) + 65;
+//            char lower_nibble = (this_byte & 0xf) + 65;
+//            // send upper nibble
+//            emit keySignal( upper_nibble );
+//            // wait for ack
 
-            // send lower nibble
-            emit keySignal( lower_nibble );
-            // wait for ack
-
+//            // send lower nibble
+//            emit keySignal( lower_nibble );
+//            // wait for ack
+            emit keySignal( this_byte );
         }
-        // send EOF marker - we will use two letter Zs which would not otherwise appear
-        emit keySignal( 'Z' );
-	emit keySignal( 'Z' );
+//        // send EOF marker - we will use two letter Zs which would not otherwise appear
+//        emit keySignal( 'Z' );
+//        emit keySignal( 'Z' );
+        emit keySignal( 4 );
 
         file.close();
     }

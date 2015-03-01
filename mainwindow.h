@@ -13,6 +13,7 @@
 #include "crt.h"
 #include "fkeymatrix.h"
 #include "keyboardhandler.h"
+#include "changesizedialog.h"
 #include "networkconnectdialog.h"
 #include "serialconnectdialog.h"
 #include "serialconnection.h"
@@ -36,6 +37,7 @@ public:
 private slots:
     void setD200emulation();
     void setD210emulation();
+    void resize();
     void selfTest();
     void toggleLogging();
     void openSerialPort();
