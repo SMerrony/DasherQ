@@ -297,12 +297,7 @@ void Terminal::processHostData( QByteArray hostDataBA ) {
                 switch (ch) {
                 case 'C':	 	// REQUIRES RESPONSE
                     // read model ID
-                    emit keySignal( 036 );
-                    emit keySignal( 0157 );
-                    emit keySignal( 043 );  // model report
-                    emit keySignal( 041 );  // D100/D200
-                    emit keySignal( 74 ); // 0b01001010 ); // see p.2-7 of D100/D200 User Manual
-                    emit keySignal( 003 );  // firmware code
+                    sendModelID();
                     skipChar = true;
                     break;
                 case 'D':
@@ -595,4 +590,33 @@ void Terminal::stopBuffering() {
     status->holding = false;
     processHostData( bufferByteArray );
     bufferByteArray.resize( 0 );
+}
+
+void Terminal::sendModelID() {
+    switch (status->emulation) {
+    case 200:
+        emit keySignal( 036 );  // Header 1
+        emit keySignal( 0157 ); // Header 2             (="o")
+        emit keySignal( 043 );  // model report follows (="#")
+        emit keySignal( 041 );  // D100/D200            (="!")
+        emit keySignal( 90 );   // 0b01011010 see p.2-7 of D100/D200 User Manual (="Z")
+        emit keySignal( 003 );  // firmware code
+        break;
+    case 210:  // FIXME: This is guessed from fossies.org/linux/misc/old/qterm-6.0.3.tar.gz/qterm-6.0.3/qtermtab.contrib
+        emit keySignal( 036 );  // Header 1
+        emit keySignal( 0157 ); // Header 2             (="o")
+        emit keySignal( 043 );  // model report follows (="#")
+        emit keySignal( 050 );  // D210                 (="(")
+        emit keySignal( 90 );   // 0b01011010 ); // see p.2-7 of D100/D200 User Manual (="Z")
+        emit keySignal( 003 );  // firmware code
+        break;
+//    case 410:  // This is from p.3-17 of the D410 User Manual
+//        emit keySignal( 036 );  // Header 1
+//        emit keySignal( 0157 ); // Header 2             (="o")
+//        emit keySignal( 043 );  // model report follows (="#")
+//        emit keySignal( 052 );  // D410                 (="*")
+//        emit keySignal( 89 );   // Status - 0b01011001
+//        emit keySignal( 89 );   // Keyboard - 0b01011001 (="Y")
+//        break;
+    }
 }

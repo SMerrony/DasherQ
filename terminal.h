@@ -89,6 +89,9 @@ public slots:
     void stopBuffering();
     void selfTest();
 
+private:
+    void sendModelID();
+
 };
 
 #endif // SCREENTHREAD_H
