@@ -22,7 +22,7 @@ signals:
     void localPrintRequest();
     
 public slots:
-    void fKeyEventHandler();
+    void fKeyEventHandler( QString text = "" );
 
 protected:
     bool eventFilter( QObject *obj, QEvent *event );

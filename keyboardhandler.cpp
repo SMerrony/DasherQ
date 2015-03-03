@@ -8,19 +8,25 @@ KeyBoardHandler::KeyBoardHandler( QObject *parent, Status *pStatus )
     : QObject( parent ) {
     myParent = (QWidget *)parent;
     status = pStatus;
-    qDebug() << "KeyboardHandler created";
+    // qDebug() << "KeyboardHandler created";
 }
 
-void KeyBoardHandler::fKeyEventHandler() {
+void KeyBoardHandler::fKeyEventHandler( QString text )  {
 
     unsigned char modifier = 0;
+    QString fKeyLabel;
 
-    QString fKeyLabel = sender()->property("text").toString();
+    // if we are called with an explicit (non-empty) string then use it
+    if (text.compare( "" ) == 0) {
+        fKeyLabel = sender()->property("text").toString();
+    } else {
+        fKeyLabel = text;
+    }
 
     if (QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ShiftModifier)) { modifier -= 16; }
     if (QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ControlModifier)) { modifier -= 64; }
 
-    // qDebug() << "KeyboardHandler received fKeyEvent " << fKeyLabel;
+    // qDebug() << "KeyboardHandler received fKeyEvent " << fKeyLabel << " with modifier " << modifier;
 
     if (fKeyLabel.compare( "Break" ) == 0) {
         qDebug() << "Break requested by user";
@@ -144,6 +150,43 @@ void KeyBoardHandler::keyReleased( QEvent *event ) {
         if (keyEvent->modifiers() & Qt::ShiftModifier) emit keySignal( 30 );
         emit keySignal( 23 );
         break;
+    case Qt::Key_F1:
+        fKeyEventHandler( "F1" );
+        break;
+    case Qt::Key_F2:
+        fKeyEventHandler( "F2" );
+        break;
+    case Qt::Key_F3:
+        fKeyEventHandler( "F3" );
+        break;
+    case Qt::Key_F4:
+        fKeyEventHandler( "F4" );
+        break;
+    case Qt::Key_F5:
+        fKeyEventHandler( "F5" );
+        break;
+    case Qt::Key_F6:
+        fKeyEventHandler( "F6" );
+        break;
+    case Qt::Key_F7:
+        fKeyEventHandler( "F7" );
+        break;
+    case Qt::Key_F8:
+        fKeyEventHandler( "F8" );
+        break;
+    case Qt::Key_F9:
+        fKeyEventHandler( "F9" );
+        break;
+    case Qt::Key_F10:
+        fKeyEventHandler( "F10" );
+        break;
+    case Qt::Key_F11:
+        fKeyEventHandler( "F11" );
+        break;
+    case Qt::Key_F12:
+        fKeyEventHandler( "F12" );
+        break;
+
         // modifiers
     case Qt::Key_Control:
         return;
