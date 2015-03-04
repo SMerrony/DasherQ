@@ -112,7 +112,12 @@ bool KeyBoardHandler::eventFilter( QObject *obj, QEvent *event ) {
     return false;  // let the system handle other events
 }
 
-
+/***
+ * For Dasher compatibility some keys need to be remapped to send DG rather than
+ * ANSI-standard codes.  Also, the Function keys are trapped here and passed on
+ * the the fKeyEventHandler.
+ *
+ ***/
 void KeyBoardHandler::keyReleased( QEvent *event ) {
 
     QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
@@ -185,6 +190,10 @@ void KeyBoardHandler::keyReleased( QEvent *event ) {
         break;
     case Qt::Key_F12:
         fKeyEventHandler( "F12" );
+        break;
+
+    case Qt::Key_AltGr:
+        emit keySignal( 30 ); // Command
         break;
 
         // modifiers

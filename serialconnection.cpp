@@ -1,6 +1,7 @@
 #include <QDebug>
 
 #include "serialconnection.h"
+#include "terminal.h"
 
 SerialConnection::SerialConnection( QObject *parent ) : QObject(parent) {
 
@@ -73,7 +74,14 @@ void SerialConnection::closeSerialPort() {
 }
 
 void SerialConnection::handleError(QSerialPort::SerialPortError error) {
-    qDebug() << "Serial I/O Error: " << error << " : " << serialPort->errorString();
+    // special case - break detected is not an error...
+    if (error == QSerialPort::BreakConditionError) {
+        QByteArray dummyData;
+        dummyData.append( Terminal::CMD );
+        emit hostDataSignal( dummyData );
+    } else {
+        qDebug() << "Serial I/O Error: " << error << " : " << serialPort->errorString();
+    }
 }
 
 QString SerialConnection::getCurrentBaudRate() {

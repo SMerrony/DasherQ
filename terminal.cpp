@@ -177,9 +177,9 @@ void Terminal::processHostData( QByteArray hostDataBA ) {
             ch = hostDataBA.at( ix );
 
             // qDebug() << "Terminal got " << ch;
+            if (ch == 0) continue;
 
             skipChar = false;
-
 
             // check for Telnet command
             if (status->connection == Status::TELNET_CONNECTED && ch == TelnetConnection::CMD_IAC) {
@@ -529,6 +529,7 @@ void Terminal::processHostData( QByteArray hostDataBA ) {
                 break;
             case CMD:
                 inCommand = true;
+                // qDebug() << "Terminal Got CMD";
                 skipChar = true;
                 break;
             }
