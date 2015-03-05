@@ -76,8 +76,7 @@ void SerialConnection::closeSerialPort() {
 void SerialConnection::handleError(QSerialPort::SerialPortError error) {
     // special case - break detected is not an error...
     if (error == QSerialPort::BreakConditionError) {
-        QByteArray dummyData;
-        dummyData.append( Terminal::CMD );
+        QByteArray dummyData( 1, Terminal::CMD );
         emit hostDataSignal( dummyData );
     } else {
         qDebug() << "Serial I/O Error: " << error << " : " << serialPort->errorString();
