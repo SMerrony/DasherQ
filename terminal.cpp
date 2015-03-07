@@ -176,8 +176,7 @@ void Terminal::processHostData( QByteArray hostDataBA ) {
 
             ch = hostDataBA.at( ix );
 
-            // qDebug() << "Terminal got " << ch;
-            // if (ch == 0) continue;
+            // qDebug() << "Terminal received " << ch;
 
             skipChar = false;
 

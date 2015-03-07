@@ -39,6 +39,7 @@ public slots:
                          QSerialPort::FlowControl flow );
     void readSerialData();
     void writeCharSerial( char );
+    void sendBreak();
     void closeSerialPort();
     void handleError(QSerialPort::SerialPortError error);
     QString getCurrentBaudRate();

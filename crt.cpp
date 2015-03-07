@@ -37,6 +37,7 @@ void Crt::paintEvent( QPaintEvent * ) {
 
     painter.setWindow(0,0, terminal->visible_cols * CHAR_WIDTH, terminal->visible_rows * CHAR_HEIGHT );
     painter.setPen( fgColor );
+    painter.setRenderHint( QPainter::Antialiasing );
 
     for (int y = 0; y < terminal->visible_rows; y++) {
         for (int x = 0; x < terminal->visible_cols; x++) {

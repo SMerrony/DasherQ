@@ -17,6 +17,7 @@ public:
     
 signals:
     void keySignal( char );
+    void breakSignal();
     void startHoldingSignal();
     void stopHoldingSignal();
     void localPrintRequest();

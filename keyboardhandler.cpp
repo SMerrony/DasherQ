@@ -30,7 +30,7 @@ void KeyBoardHandler::fKeyEventHandler( QString text )  {
 
     if (fKeyLabel.compare( "Break" ) == 0) {
         qDebug() << "Break requested by user";
-        emit keySignal( 0 ); // special CMD_BREAK indicator (trapped by connection handler)
+        emit breakSignal(); // special CMD_BREAK indicator (trapped by connection handler)
     } else if (fKeyLabel.compare( "F1" ) == 0) {
         emit keySignal( 30 );
         emit keySignal( 113 + modifier );
@@ -190,10 +190,6 @@ void KeyBoardHandler::keyReleased( QEvent *event ) {
         break;
     case Qt::Key_F12:
         fKeyEventHandler( "F12" );
-        break;
-
-    case Qt::Key_AltGr:
-        emit keySignal( 30 ); // Command
         break;
 
         // modifiers

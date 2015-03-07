@@ -22,14 +22,22 @@ ChangeSizeDialog::ChangeSizeDialog(QWidget *parent) : QDialog( parent )
     rowsComboBox->addItem( "24", 24 );
     rowsComboBox->addItem( "25", 25 );
     rowsComboBox->addItem( "36", 36 );
-//    rowsComboBox->addItem( "48", 48 );
+    rowsComboBox->addItem( "48", 48 );
 
-    fLayout->addRow( "Columns:", rowsComboBox );
+    fLayout->addRow( "Rows:", rowsComboBox );
+
+    scaleComboBox = new QComboBox;
+    scaleComboBox->addItem( "Normal", 1.750 );
+    scaleComboBox->addItem( "Smaller", 1.50 );
+    scaleComboBox->addItem( "Tiny", 1.0 );
+
+    fLayout->addRow( "Zoom:", scaleComboBox );
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox( QDialogButtonBox::Ok | QDialogButtonBox::Cancel );
     connect( buttonBox, SIGNAL( accepted() ), this, SLOT( accept() ) );
     connect( buttonBox, SIGNAL( rejected() ), this, SLOT( reject() ) );
     fLayout->addWidget( buttonBox );
+
 
     setLayout( fLayout );
 

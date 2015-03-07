@@ -57,4 +57,5 @@ RC_FILE = DasherQ.rc
 DISTFILES += \
     DGlogoOrange.ico \
     DasherQ.rc \
-    BROWSE_template.txt
+    BROWSE_template.txt \
+    MEMACS_template.txt

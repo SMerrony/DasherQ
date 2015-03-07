@@ -125,7 +125,8 @@ void MainWindow::resize() {
     ChangeSizeDialog *d = new ChangeSizeDialog( this );
     if (d->exec()) {
         terminal->resize( d->rowsComboBox->currentData().toInt(), d->colsComboBox->currentData().toInt() );
-        crt->setMinimumSize( terminal->visible_cols * Crt::CHAR_WIDTH, terminal->visible_rows * Crt::CHAR_HEIGHT * 1.750 ); // was 800x576
+        crt->setMinimumSize( terminal->visible_cols * Crt::CHAR_WIDTH,
+                             terminal->visible_rows * Crt::CHAR_HEIGHT * d->scaleComboBox->currentData().toFloat() ); // was 800x576
         this->adjustSize();
     }
     delete d;
@@ -158,6 +159,9 @@ void MainWindow::openSerialPort() {
             connect( this, SIGNAL(keySignal(char)), serialConnection, SLOT(writeCharSerial(char)) );
             connect( terminal, SIGNAL(keySignal(char)), serialConnection, SLOT(writeCharSerial(char)) );
             connect( keyHandler, SIGNAL(keySignal(char)), serialConnection, SLOT(writeCharSerial(char)) );
+            // break handling is 'special', and they only originate from the keyboard...
+            connect( keyHandler, SIGNAL(breakSignal()), serialConnection, SLOT(sendBreak()) );
+
             connect( serialConnection, SIGNAL(hostDataSignal(QByteArray)), terminal, SLOT(processHostData(QByteArray)) );
             openSerialAction->setEnabled( false );
             closeSerialAction->setEnabled( true );
@@ -179,6 +183,7 @@ void MainWindow::closeSerialPort() {
     disconnect( keyHandler, SIGNAL(keySignal(char)), serialConnection, SLOT(writeCharSerial(char)) );
     disconnect( serialConnection, SIGNAL(hostDataSignal(QByteArray)), terminal, SLOT(processHostData(QByteArray)) );
     disconnect( terminal, SIGNAL(keySignal(char)), serialConnection, SLOT(writeCharSerial(char)) );
+    disconnect( keyHandler, SIGNAL(breakSignal()), serialConnection, SLOT(sendBreak()) );
     delete serialConnection;
     status->connection = Status::DISCONNECTED;
     status->serialPort = "";
@@ -412,23 +417,11 @@ void MainWindow::sendFile() {
         QByteArray blob = file.readAll();
         for (int i = 0; i < blob.size(); i++) {
             char this_byte = blob.at( i );
-//            // extract the nibbles, add to 'A' for safely transferable character
-//            char upper_nibble = (this_byte>>4) + 65;
-//            char lower_nibble = (this_byte & 0xf) + 65;
-//            // send upper nibble
-//            emit keySignal( upper_nibble );
-//            // wait for ack
 
-//            // send lower nibble
-//            emit keySignal( lower_nibble );
-//            // wait for ack
             emit keySignal( this_byte );
         }
-//        // send EOF marker - we will use two letter Zs which would not otherwise appear
-//        emit keySignal( 'Z' );
-//        emit keySignal( 'Z' );
+        // send EOF marker - we will use two letter Zs which would not otherwise appear
         emit keySignal( 4 );
-
         file.close();
     }
 

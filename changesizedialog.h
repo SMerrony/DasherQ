@@ -10,7 +10,7 @@ class ChangeSizeDialog : public QDialog
 public:
     explicit ChangeSizeDialog( QWidget *parent = 0 );
 
-    QComboBox *colsComboBox, *rowsComboBox;
+    QComboBox *colsComboBox, *rowsComboBox, *scaleComboBox;
 
 };
 
