@@ -193,9 +193,10 @@ void KeyBoardHandler::keyReleased( QEvent *event ) {
         break;
 
         // modifiers
+        // swallow these...
+    case Qt::Key_CapsLock:
     case Qt::Key_Control:
-        return;
-        break;
+    case Qt::Key_NumLock:
     case Qt::Key_Shift:
         return;
         break;
