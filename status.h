@@ -10,6 +10,7 @@ public:
     enum EmulationType { D200 = 200,
                          D210 = 210
                        };
+    int visLines, visCols;
     QString serialPort, remoteHost;
     bool logging;
     bool holding, dirty;
