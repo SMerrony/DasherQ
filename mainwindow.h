@@ -8,6 +8,7 @@
 #include <QLabel>
 #include <QMenu>
 #include <QMainWindow>
+#include <QScrollArea>
 #include <QTextStream>
 
 #include "crt.h"
@@ -65,6 +66,7 @@ private:
 
     FkeyMatrix *fKeyMatrix;
     Crt *crt;
+    QScrollArea *scrollArea;
     KeyBoardHandler *keyHandler;
 
     Terminal *terminal;
