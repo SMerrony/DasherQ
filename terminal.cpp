@@ -10,7 +10,7 @@ Terminal::Terminal( Status *pStatus ){
     // get the shared objects
     status = pStatus;
 
-    visible_rows = DEFAULT_ROWS;
+    visible_lines = DEFAULT_LINES;
     visible_cols = DEFAULT_COLS;
     cursorX = 0;
     cursorY = 0;
@@ -34,7 +34,9 @@ Terminal::Terminal( Status *pStatus ){
 }
 
 void Terminal::resize( int rows, int cols ) {
-    visible_rows = rows;
+    Q_ASSERT( rows <= MAX_VISIBLE_LINES );
+    Q_ASSERT( cols <= MAX_VISIBLE_COLS );
+    visible_lines = rows;
     visible_cols = cols;
     cursorX = 0;
     cursorY = 0;
@@ -52,10 +54,14 @@ void Terminal::resize( int rows, int cols ) {
     underscored = false;
     protectd = false;
 
+    status->visLines = rows;
+    status->visCols = cols;
+
     clearScreen();
 }
 
 void Terminal::clearLine( int line ) {
+    Q_ASSERT( line < TOTAL_LINES );
     for (int cc = 0; cc < visible_cols; cc++) {
         display[line][cc].clearToSpace();
     }
@@ -69,7 +75,7 @@ void Terminal::clearLine( int line ) {
 }
 
 void Terminal::clearScreen() {
-    for (int row = 0; row < visible_rows; row++){
+    for (int row = 0; row < visible_lines; row++){
         clearLine( row );
     }
 }
@@ -80,7 +86,7 @@ void Terminal::eraseUnprotectedToEndOfScreen() {
         display[cursorY][x].clearToSpaceIfUnprotected();
     }
     // clear all lines below
-    for (int y = cursorY + 1; y < visible_rows; y++) {
+    for (int y = cursorY + 1; y < visible_lines; y++) {
         for (int x = 0; x < visible_cols; x++) {
             display[y][x].clearToSpaceIfUnprotected();
         }
@@ -90,13 +96,13 @@ void Terminal::eraseUnprotectedToEndOfScreen() {
 void Terminal::scrollUp( int rows ) {
     for (int times = 0; times < rows; times++) {
         // move each char up a row
-        for (int r = 1; r < visible_rows; r++) {
+        for (int r = 0; r < TOTAL_LINES; r++) {
             for (int c = 0; c < visible_cols; c++) {
                 display[r-1][c].copy( display[r][c] );
             }
         }
         // clear the bottom row
-        clearLine( visible_rows - 1 );
+        clearLine( TOTAL_LINES - 1 );
     }
 }
 
@@ -152,11 +158,11 @@ void Terminal::selfTest() {
     qba.append( 'E' );
     qba.append( NL );
 
-    for (int l = 8; l < visible_rows; l++ ) {
+    for (int l = 8; l < visible_lines; l++ ) {
         qba.append( QString::number( l ) );
         qba.append( NL );
     }
-    qba.append( QString::number( visible_rows ) );
+    qba.append( QString::number( visible_lines ) );
 
     processHostData( qba );
 }
@@ -274,12 +280,12 @@ void Terminal::processHostData( QByteArray hostDataBA ) {
                     // special case - y stays the same - see D410 User Manual p.3-25
                     newYaddress = cursorY;
                 }
-                if (cursorY >= visible_rows) {
+                if (cursorY >= visible_lines) {
                     // see end of p.3-24 in D410 User Manual
                     if (roll_enabled) {
-                        scrollUp( cursorY - (visible_rows - 1));
+                        scrollUp( cursorY - (visible_lines - 1));
                     }
-                    cursorY -= visible_rows;
+                    cursorY -= visible_lines;
                 }
                 readingWindowAddressY = false;
                 skipChar = true;
@@ -454,17 +460,17 @@ void Terminal::processHostData( QByteArray hostDataBA ) {
                 skipChar = true;
                 break;
             case CURSOR_UP:
-                if (cursorY > 0) { cursorY--; } else { cursorY = visible_rows - 1; }
+                if (cursorY > 0) { cursorY--; } else { cursorY = visible_lines - 1; }
                 skipChar = true;
                 break;
             case CURSOR_DOWN:
-                if (cursorY < visible_rows - 2 ) { cursorY++; } else { cursorY = 0; }
+                if (cursorY < visible_lines - 1 ) { cursorY++; } else { cursorY = 0; }
                 skipChar = true;
                 break;
             case CURSOR_RIGHT:
-                if (cursorX < visible_cols - 2) { cursorX++; } else {
+                if (cursorX < visible_cols - 1) { cursorX++; } else {
                     cursorX = 0;
-                    if (cursorY < visible_rows - 2 ) { cursorY++; } else { cursorY = 0; }
+                    if (cursorY < visible_lines - 2 ) { cursorY++; } else { cursorY = 0; }
                 }
                 skipChar = true;
                 break;
@@ -473,7 +479,7 @@ void Terminal::processHostData( QByteArray hostDataBA ) {
                     cursorX--;
                 } else {
                     cursorX = visible_cols - 1;
-                    if (cursorY > 0) { cursorY--; } else { cursorY = visible_rows - 1; }
+                    if (cursorY > 0) { cursorY--; } else { cursorY = visible_lines - 1; }
                 }
                 skipChar = true;
                 break;
@@ -537,7 +543,7 @@ void Terminal::processHostData( QByteArray hostDataBA ) {
 
             // wrap due to hitting margin or new line?
             if (cursorX == visible_cols || ch == NL) {
-                if (cursorY == visible_rows - 1) { // hit bottom of screen
+                if (cursorY == visible_lines - 1) { // hit bottom of screen
                     if (roll_enabled) {
                         scrollUp( 1 );
                     } else {
@@ -562,6 +568,8 @@ void Terminal::processHostData( QByteArray hostDataBA ) {
             // finally, put the character in the displayable character matrix
             // it will get picked up on next refresh by Crt
             if (ch > 0) {
+                Q_ASSERT( cursorX <= MAX_VISIBLE_COLS );
+                Q_ASSERT( cursorY <= MAX_VISIBLE_LINES );
                 display[cursorY][cursorX].set(  ch, blinking, dimmed, reversedVideo, underscored, protectd );
             } else {
                 qDebug() << "Terminal: Warning - Ignoring character with code " << ch;
@@ -620,3 +628,4 @@ void Terminal::sendModelID() {
 //        break;
     }
 }
+
