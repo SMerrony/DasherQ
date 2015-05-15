@@ -9,6 +9,8 @@ Crt::Crt(QWidget *parent, Terminal *pTerminal ) : QWidget( parent ) {
 
     terminal = pTerminal;
 
+    rowOffset = Terminal::TOTAL_LINES - terminal->visible_lines;
+
     setGreenColours();
 
     bdfFont = new BDFfont();
@@ -35,25 +37,25 @@ void Crt::paintEvent( QPaintEvent * ) {
 
     QColor currColor;
 
-    painter.setWindow(0,0, terminal->visible_cols * CHAR_WIDTH, terminal->visible_rows * CHAR_HEIGHT );
+    painter.setWindow(0,0, terminal->visible_cols * CHAR_WIDTH, Terminal::TOTAL_LINES * CHAR_HEIGHT );
     painter.setPen( fgColor );
     painter.setRenderHint( QPainter::Antialiasing );
 
-    for (int y = 0; y < terminal->visible_rows; y++) {
+    for (int y = 0; y < terminal->visible_lines; y++) {
         for (int x = 0; x < terminal->visible_cols; x++) {
 
             // first fill the cell with the right background colour, then set the right foreground colour
             if (terminal->display[y][x].reverse) {
-                painter.fillRect( x * CHAR_WIDTH, y * CHAR_HEIGHT, CHAR_WIDTH, CHAR_HEIGHT, fgColor );
+                painter.fillRect( x * CHAR_WIDTH, (rowOffset + y) * CHAR_HEIGHT, CHAR_WIDTH, CHAR_HEIGHT, fgColor );
                 currColor = bgColor;
             } else {
-                painter.fillRect( x * CHAR_WIDTH, y * CHAR_HEIGHT, CHAR_WIDTH, CHAR_HEIGHT, bgColor );
+                painter.fillRect( x * CHAR_WIDTH, (rowOffset + y) * CHAR_HEIGHT, CHAR_WIDTH, CHAR_HEIGHT, bgColor );
                 currColor = fgColor;
             }
 
             // draw the character - but handle blinking
             if (terminal->blinking_enabled && terminal->blinkState && terminal->display[y][x].blink) {
-                painter.fillRect( x * CHAR_WIDTH, (y + 1) * CHAR_HEIGHT, CHAR_WIDTH, CHAR_HEIGHT, bgColor );
+                painter.fillRect( x * CHAR_WIDTH, (rowOffset + y + 1) * CHAR_HEIGHT, CHAR_WIDTH, CHAR_HEIGHT, bgColor );
                 continue; // nothing else to do for this cell if in a blanked blink cycle
             } else {
                 if (terminal->display[y][x].charValue > 31  && terminal->display[y][x].charValue < 128) {
@@ -73,37 +75,37 @@ void Crt::paintEvent( QPaintEvent * ) {
             // underscore
             if (terminal->display[y][x].underscore) {
                 painter.setPen( currColor );
-                painter.drawLine( x * CHAR_WIDTH, (y + 1) * CHAR_HEIGHT, (x + 1) * CHAR_WIDTH, (y + 1) * CHAR_HEIGHT );
+                painter.drawLine( x * CHAR_WIDTH, (rowOffset + y + 1) * CHAR_HEIGHT, (x + 1) * CHAR_WIDTH, (rowOffset + y + 1) * CHAR_HEIGHT );
             }
 
         } // end for x
     } // end for y
 
     // draw the cursor - if on-screen
-    if (terminal->cursorX < terminal->visible_cols && terminal->cursorY < terminal->visible_rows) {
-        painter.fillRect( terminal->cursorX * CHAR_WIDTH, terminal->cursorY * CHAR_HEIGHT, CHAR_WIDTH, CHAR_HEIGHT, fgColor );
+    if (terminal->cursorX < terminal->visible_cols && terminal->cursorY < terminal->visible_lines) {
+        painter.fillRect( terminal->cursorX * CHAR_WIDTH, (rowOffset + terminal->cursorY) * CHAR_HEIGHT, CHAR_WIDTH, CHAR_HEIGHT, fgColor );
         // draw inverted character if present
         if (terminal->display[terminal->cursorY][terminal->cursorX].charValue != ' ') {
-            drawReverseChar( &painter, terminal->cursorX, terminal->cursorY, terminal->display[terminal->cursorY][terminal->cursorX].charValue );
+            drawReverseChar( &painter, terminal->cursorX, (rowOffset + terminal->cursorY), terminal->display[terminal->cursorY][terminal->cursorX].charValue );
         }
     }
 }
 
 inline void Crt::drawChar( QPainter *painter, int x, int y, unsigned char charValue ) {
     if ( bdfFont->map[charValue].loaded) {
-        painter->drawPixmap( x * CHAR_WIDTH , y * CHAR_HEIGHT, *(bdfFont->map[charValue].pixmap) );
+        painter->drawPixmap( x * CHAR_WIDTH , (rowOffset + y) * CHAR_HEIGHT, *(bdfFont->map[charValue].pixmap) );
     }
 }
 
 inline void Crt::drawDimChar( QPainter *painter, int x, int y, unsigned char charValue ) {
     if ( bdfFont->map[charValue].loaded) {
-        painter->drawPixmap( x * CHAR_WIDTH , y * CHAR_HEIGHT, *(bdfFont->map[charValue].dimPixmap) );
+        painter->drawPixmap( x * CHAR_WIDTH , (rowOffset + y) * CHAR_HEIGHT, *(bdfFont->map[charValue].dimPixmap) );
     }
 }
 
 inline void Crt::drawReverseChar( QPainter *painter, int x, int y, unsigned char charValue ) {
     if ( bdfFont->map[charValue].loaded) {
-        painter->drawPixmap( x * CHAR_WIDTH , y * CHAR_HEIGHT, *(bdfFont->map[charValue].reversePixmap) );
+        painter->drawPixmap( x * CHAR_WIDTH , (rowOffset + y) * CHAR_HEIGHT, *(bdfFont->map[charValue].reversePixmap) );
     }
 }
 
@@ -121,7 +123,7 @@ void Crt::print( QPrinter *printer ) {
     pPainter.scale( scale, scale );
     pPainter.translate( -width()/2, -height()/2 );
 
-    for (int y = 0; y < terminal->visible_rows; y++) {
+    for (int y = 0; y < terminal->visible_lines; y++) {
         for (int x = 0; x < terminal->visible_cols; x++) {
 
             // first fill the cell with the right background colour, then set the right foreground colour
