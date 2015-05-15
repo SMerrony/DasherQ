@@ -8,6 +8,8 @@
 #include <QMessageBox>
 #include <QPrintDialog>
 #include <QPrinter>
+#include <QScrollBar>
+#include <QSizePolicy>
 #include <QStatusBar>
 #include <QThread>
 #include <QTimer>
@@ -29,10 +31,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
     terminal = new Terminal( status );
 
-    crt = new Crt( this, terminal );
-    crt->setMinimumSize( terminal->visible_cols * Crt::CHAR_WIDTH, terminal->visible_rows * Crt::CHAR_HEIGHT * 1.750 ); // was 800x576
+    scrollArea = new QScrollArea();
+    scrollArea->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
+    scrollArea->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
-    setCentralWidget( crt );
+    crt = new Crt( this, terminal );
+    crt->setMinimumSize( terminal->visible_cols * Crt::CHAR_WIDTH, Terminal::TOTAL_LINES * Crt::CHAR_HEIGHT * 1.750 ); // was 800x576
+
+    scrollArea->setWidget( crt );
+    setCentralWidget( scrollArea );
+    scrollArea->verticalScrollBar()->setValue( scrollArea->verticalScrollBar()->maximum() );
+    // lock size of CRT widget
+    int sbWidth = style()->pixelMetric(QStyle::PM_ScrollBarExtent) + 2;
+    scrollArea->setFixedSize( (terminal->visible_cols * Crt::CHAR_WIDTH) + sbWidth, terminal->visible_lines * Crt::CHAR_HEIGHT * 1.750 );
 
     // install our keyboard handler
     keyHandler = new KeyBoardHandler( this, status );
@@ -63,6 +74,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
     // status bar
     setupStatusBar();
+
 
     connect( keyHandler, SIGNAL(localPrintRequest()), this, SLOT(localPrintRequest()) );
     connect( keyHandler, SIGNAL(startHoldingSignal()), terminal, SLOT(startBuffering()) );
@@ -125,9 +137,16 @@ void MainWindow::resize() {
     ChangeSizeDialog *d = new ChangeSizeDialog( this );
     if (d->exec()) {
         terminal->resize( d->rowsComboBox->currentData().toInt(), d->colsComboBox->currentData().toInt() );
+        crt->rowOffset = Terminal::TOTAL_LINES - terminal->visible_lines;
         crt->setMinimumSize( terminal->visible_cols * Crt::CHAR_WIDTH,
-                             terminal->visible_rows * Crt::CHAR_HEIGHT * d->scaleComboBox->currentData().toFloat() ); // was 800x576
+                             terminal->visible_lines * Crt::CHAR_HEIGHT * d->scaleComboBox->currentData().toFloat() ); // was 800x576
+        crt->resize( terminal->visible_cols * Crt::CHAR_WIDTH,
+                     terminal->visible_lines * Crt::CHAR_HEIGHT * 2 *d->scaleComboBox->currentData().toFloat());
+        // lock size of CRT widget
+        int sbWidth = style()->pixelMetric(QStyle::PM_ScrollBarExtent) + 2;
+        scrollArea->setFixedSize( (terminal->visible_cols * Crt::CHAR_WIDTH) + sbWidth, terminal->visible_lines * Crt::CHAR_HEIGHT * d->scaleComboBox->currentData().toFloat() );
         this->adjustSize();
+        scrollArea->verticalScrollBar()->setValue( scrollArea->verticalScrollBar()->maximum() );
     }
     delete d;
 }
@@ -373,7 +392,10 @@ void MainWindow::updateStatusBar() {
         onlineStatusLabel->setText( onlineStatusLabel->text() + " [Hold]");
     }
 
-    emulationStatusLabel->setText( 'D' + QString::number( status->emulation ) );
+    emulationStatusLabel->setText( 'D' + QString::number( status->emulation ) +
+                                   " (" + QString::number( status->visLines ) +
+                                   'x' + QString::number( status->visCols ) +
+                                   ')' );
 
 }
 
