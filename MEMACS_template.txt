@@ -15,7 +15,7 @@ One\Window
 
 
 
-Yank
+Split\Window
 
 
 
@@ -23,7 +23,7 @@ Search\Fwd
 Open\Line
 
 
-
+Search\Bkwd
 
 
 
