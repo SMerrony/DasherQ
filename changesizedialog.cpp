@@ -18,18 +18,19 @@ ChangeSizeDialog::ChangeSizeDialog(QWidget *parent) : QDialog( parent )
 
     fLayout->addRow( "Columns:", colsComboBox );
 
-    rowsComboBox = new QComboBox;
-    rowsComboBox->addItem( "24", 24 );
-    rowsComboBox->addItem( "25", 25 );
-    rowsComboBox->addItem( "36", 36 );
-    rowsComboBox->addItem( "48", 48 );
+    linesComboBox = new QComboBox;
+    linesComboBox->addItem( "24", 24 );
+    linesComboBox->addItem( "25", 25 );
+    linesComboBox->addItem( "36", 36 );
+    linesComboBox->addItem( "48", 48 );
+    linesComboBox->addItem( "66", 66 );  // Standard Line-Printer size
 
-    fLayout->addRow( "Rows:", rowsComboBox );
+    fLayout->addRow( "Lines:", linesComboBox );
 
     scaleComboBox = new QComboBox;
-    scaleComboBox->addItem( "Normal", 1.750 );
-    scaleComboBox->addItem( "Smaller", 1.50 );
-    scaleComboBox->addItem( "Tiny", 1.0 );
+    scaleComboBox->addItem( "Normal", 1.75f );
+    scaleComboBox->addItem( "Smaller", 1.4f );
+    scaleComboBox->addItem( "Tiny", 1.0f );
 
     fLayout->addRow( "Zoom:", scaleComboBox );
 
