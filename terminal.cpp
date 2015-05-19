@@ -33,10 +33,10 @@ Terminal::Terminal( Status *pStatus ){
     display[12][40].charValue = 'K';
 }
 
-void Terminal::resize( int rows, int cols ) {
-    Q_ASSERT( rows <= MAX_VISIBLE_LINES );
+void Terminal::resize( int lines, int cols ) {
+    Q_ASSERT( lines <= MAX_VISIBLE_LINES );
     Q_ASSERT( cols <= MAX_VISIBLE_COLS );
-    visible_lines = rows;
+    visible_lines = lines;
     visible_cols = cols;
     cursorX = 0;
     cursorY = 0;
@@ -54,7 +54,7 @@ void Terminal::resize( int rows, int cols ) {
     underscored = false;
     protectd = false;
 
-    status->visLines = rows;
+    status->visLines = lines;
     status->visCols = cols;
 
     clearScreen();

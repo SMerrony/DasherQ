@@ -17,7 +17,7 @@ public:
     static const int TOTAL_COLS             = 208;
 
     static const int DEFAULT_LINES           = 24;
-    static const int MAX_VISIBLE_LINES       = 48;
+    static const int MAX_VISIBLE_LINES       = 66;
     static const int TOTAL_LINES             = 96;
 
     static const unsigned char NUL			=  0;
@@ -76,7 +76,7 @@ private:
     QByteArray bufferByteArray;
 
 public:
-    void resize( int rows, int cols );
+    void resize( int lines, int cols );
     void clearLine( int line );
     void clearScreen();
     void eraseUnprotectedToEndOfScreen();
