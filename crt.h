@@ -19,6 +19,7 @@ public:
     static const int CHAR_WIDTH = 10;
     static const int CHAR_HEIGHT = 12;
     int rowOffset;
+    float zoom;
 
     void paintEvent(QPaintEvent *);
     void print( QPrinter * );

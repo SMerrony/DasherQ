@@ -9,7 +9,9 @@ Crt::Crt(QWidget *parent, Terminal *pTerminal ) : QWidget( parent ) {
 
     terminal = pTerminal;
 
-    rowOffset = Terminal::TOTAL_LINES - terminal->visible_lines;
+//    rowOffset = Terminal::TOTAL_LINES - terminal->visible_lines;
+    rowOffset = 0;
+    zoom = 1.750;
 
     setGreenColours();
 
@@ -37,7 +39,9 @@ void Crt::paintEvent( QPaintEvent * ) {
 
     QColor currColor;
 
-    painter.setWindow(0,0, terminal->visible_cols * CHAR_WIDTH, Terminal::TOTAL_LINES * CHAR_HEIGHT );
+//    rowOffset = Terminal::TOTAL_LINES - terminal->visible_lines;
+    painter.setWindow(0,0, terminal->visible_cols * CHAR_WIDTH, terminal->visible_lines * CHAR_HEIGHT );
+    //painter.setViewport(0,0, terminal->visible_cols * CHAR_WIDTH, Terminal::TOTAL_LINES * CHAR_HEIGHT * zoom );
     painter.setPen( fgColor );
     painter.setRenderHint( QPainter::Antialiasing );
 
