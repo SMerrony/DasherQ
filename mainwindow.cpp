@@ -31,19 +31,21 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
     terminal = new Terminal( status );
 
-    scrollArea = new QScrollArea();
-    scrollArea->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
-    scrollArea->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+//    scrollArea = new QScrollArea();
+//    scrollArea->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
+//    scrollArea->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
     crt = new Crt( this, terminal );
-    crt->setMinimumSize( terminal->visible_cols * Crt::CHAR_WIDTH, Terminal::TOTAL_LINES * Crt::CHAR_HEIGHT * 1.750 ); // was 800x576
+    crt->setMinimumSize( terminal->visible_cols * Crt::CHAR_WIDTH, terminal->visible_lines * Crt::CHAR_HEIGHT * crt->zoom ); // was 800x576
 
-    scrollArea->setWidget( crt );
-    setCentralWidget( scrollArea );
-    scrollArea->verticalScrollBar()->setValue( scrollArea->verticalScrollBar()->maximum() );
-    // lock size of CRT widget
-    int sbWidth = style()->pixelMetric(QStyle::PM_ScrollBarExtent) + 2;
-    scrollArea->setFixedSize( (terminal->visible_cols * Crt::CHAR_WIDTH) + sbWidth, terminal->visible_lines * Crt::CHAR_HEIGHT * 1.750 );
+    //    scrollArea->setWidget( crt );
+    //    setCentralWidget( scrollArea );
+    //    scrollArea->verticalScrollBar()->setValue( scrollArea->verticalScrollBar()->maximum() );
+    //    // lock size of CRT widget
+    //    int sbWidth = style()->pixelMetric(QStyle::PM_ScrollBarExtent) + 2;
+    //    scrollArea->setFixedSize( (terminal->visible_cols * Crt::CHAR_WIDTH) + sbWidth, terminal->visible_lines * Crt::CHAR_HEIGHT * 1.750 );
+
+    setCentralWidget( crt );
 
     // install our keyboard handler
     keyHandler = new KeyBoardHandler( this, status );
@@ -136,17 +138,19 @@ void MainWindow::resize() {
 
     ChangeSizeDialog *d = new ChangeSizeDialog( this );
     if (d->exec()) {
-        terminal->resize( d->rowsComboBox->currentData().toInt(), d->colsComboBox->currentData().toInt() );
-        crt->rowOffset = Terminal::TOTAL_LINES - terminal->visible_lines;
+        int newLines  = d->linesComboBox->currentData().toInt();
+        int newCols   = d->colsComboBox->currentData().toInt();
+        float newZoom = d->scaleComboBox->currentData().toFloat();
+        terminal->resize( newLines, newCols );
+        //crt->rowOffset = Terminal::TOTAL_LINES - terminal->visible_lines;
+        crt->zoom = newZoom;
         crt->setMinimumSize( terminal->visible_cols * Crt::CHAR_WIDTH,
-                             terminal->visible_lines * Crt::CHAR_HEIGHT * d->scaleComboBox->currentData().toFloat() ); // was 800x576
-        crt->resize( terminal->visible_cols * Crt::CHAR_WIDTH,
-                     terminal->visible_lines * Crt::CHAR_HEIGHT * 2 *d->scaleComboBox->currentData().toFloat());
+                             terminal->visible_lines * Crt::CHAR_HEIGHT * newZoom ); // was 800x576
         // lock size of CRT widget
-        int sbWidth = style()->pixelMetric(QStyle::PM_ScrollBarExtent) + 2;
-        scrollArea->setFixedSize( (terminal->visible_cols * Crt::CHAR_WIDTH) + sbWidth, terminal->visible_lines * Crt::CHAR_HEIGHT * d->scaleComboBox->currentData().toFloat() );
+//        int sbWidth = style()->pixelMetric(QStyle::PM_ScrollBarExtent) + 2;
+//        scrollArea->setFixedSize( (terminal->visible_cols * Crt::CHAR_WIDTH) + sbWidth, terminal->visible_lines * Crt::CHAR_HEIGHT * newZoom );
         this->adjustSize();
-        scrollArea->verticalScrollBar()->setValue( scrollArea->verticalScrollBar()->maximum() );
+//        scrollArea->verticalScrollBar()->setValue( scrollArea->verticalScrollBar()->maximum() );
     }
     delete d;
 }
@@ -311,8 +315,8 @@ void MainWindow::setupMenuBar() {
 
     action = menu->addSeparator();
 
-    selfTestAction = menu->addAction( "Resize" );
-    connect( selfTestAction, SIGNAL( triggered() ), this, SLOT( resize() ) );
+    resizeAction = menu->addAction( "Resize" );
+    connect( resizeAction, SIGNAL( triggered() ), this, SLOT( resize() ) );
     action = menu->addSeparator();
 
     selfTestAction = menu->addAction( "Self-Test" );
