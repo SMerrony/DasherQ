@@ -62,10 +62,7 @@ void TelnetConnection::handleTelnetError( QAbstractSocket::SocketError socketErr
         qDebug() << "The host was not found. Please check the host name and port settings.";
         break;
     case QAbstractSocket::ConnectionRefusedError:
-        qDebug() << "The connection was refused by the peer. "
-                                    "Make sure the fortune server is running, "
-                                    "and check that the host name and port "
-                                    "settings are correct.";
+        qDebug() << "The connection was refused by the peer. Please check the host name and port settings.";
         break;
     default:
         qDebug() << "The following error occurred: " << tcpSocket->errorString();

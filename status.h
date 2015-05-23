@@ -11,7 +11,7 @@ public:
                          D210 = 210
                        };
     int visLines, visCols;
-    QString serialPort, remoteHost;
+    QString serialPort, remoteHost, remotePort;
     bool logging;
     bool holding, dirty;
     ConnectionType connection;

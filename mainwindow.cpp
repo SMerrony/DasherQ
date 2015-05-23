@@ -241,6 +241,7 @@ void MainWindow::openNetworkPort() {
             serialMenu->setEnabled( false );
             status->connection = Status::TELNET_CONNECTED;
             status->remoteHost = d->hostLineEdit->text();
+            status->remotePort = d->portLineEdit->text();
         }
     } else {
         QMessageBox::critical( this, "Error", "Unable to connect to telnet server");
@@ -384,7 +385,7 @@ void MainWindow::updateStatusBar() {
         break;
     case Status::TELNET_CONNECTED:
         onlineStatusLabel->setText( "Online (Telnet)" );
-        connectionStatusLabel->setText( status->remoteHost );
+        connectionStatusLabel->setText( status->remoteHost + ":" + status->remotePort );
         break;
     }
 
