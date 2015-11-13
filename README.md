@@ -13,12 +13,12 @@ build and run on all desktop platforms supported by that combination.
 * Reverse video, blinking, dim and underlined characters
 * Pixel-for-pixel copy of D410 character set
 * Session logging to file
-* Loadable function-key templates (SED and SMI provided as examples)
+* Loadable function-key templates (BROWSE, SED and SMI provided as examples)
 
 ## Using DasherQ
 
 ### Function Keys
-Use the keys simulated on the toolbar in DasherQ - your OS will probably interfere with the F-keys on your keyboard.  
+Use the keys simulated on the toolbar in DasherQ - your OS might interfere with the F-keys on your keyboard.  
 The Shift and Control keys can be used in conjunction with the simulated F-keys just like a real Dasher.  
 The "Brk" key sends a Command-Break signal to the host when connected via the serial interface.  
 "Hold" and "Local Print" work as you would expect.
