@@ -109,7 +109,7 @@ void Terminal::scrollUp( int rows ) {
 void Terminal::selfTest() {
 
     char testlineHRule1[] = "12345678901234567890123456789012345678901234567890123456789012345678901234567890";
-    char testlineHRule2[] = "2        1         2         3         4         5         6         7         8";
+    char testlineHRule2[] = "         1         2         3         4         5         6         7         8";
     char testline1[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567489!\"$%^.";
     char testlineN[] = "3 Normal : ";
     char testlineD[] = "4 Dim    : ";
@@ -516,6 +516,18 @@ void Terminal::processHostData( QByteArray hostDataBA ) {
                 emit keySignal( cursorY );
                 skipChar = true;
                 break;
+            case REVERSE_VIDEO_OFF:
+                if (status->emulation >= 210) {
+                    reversedVideo = false;
+                    skipChar = true;
+                }
+                break;
+            case REVERSE_VIDEO_ON:
+                if (status->emulation >= 210) {
+                    reversedVideo = true;
+                    skipChar = true;
+                }
+                break;
             case ROLL_ENABLE:
                 roll_enabled = true;
                 skipChar = true;
@@ -607,16 +619,24 @@ void Terminal::sendModelID() {
         emit keySignal( 0157 ); // Header 2             (="o")
         emit keySignal( 043 );  // model report follows (="#")
         emit keySignal( 041 );  // D100/D200            (="!")
-        emit keySignal( 90 );   // 0b01011010 see p.2-7 of D100/D200 User Manual (="Z")
+        emit keySignal( 0132 );   // 0b01011010 see p.2-7 of D100/D200 User Manual (="Z")
         emit keySignal( 003 );  // firmware code
         break;
-    case 210:  // FIXME: This is guessed from fossies.org/linux/misc/old/qterm-6.0.3.tar.gz/qterm-6.0.3/qtermtab.contrib
+    case 210:
         emit keySignal( 036 );  // Header 1
         emit keySignal( 0157 ); // Header 2             (="o")
         emit keySignal( 043 );  // model report follows (="#")
         emit keySignal( 050 );  // D210                 (="(")
-        emit keySignal( 90 );   // 0b01011010 ); // see p.2-7 of D100/D200 User Manual (="Z")
-        emit keySignal( 003 );  // firmware code
+        emit keySignal( 0121 );   // 0b01010001 ); See p.3-9 of D210/D211 User Manual
+        emit keySignal( 0132 );  // firmware code
+        break;
+    case 211:
+        emit keySignal( 036 );  // Header 1
+        emit keySignal( 0157 ); // Header 2             (="o")
+        emit keySignal( 043 );  // model report follows (="#")
+        emit keySignal( 050 );  // D210                 (="(")
+        emit keySignal( 0131 );   // 0b01010001 ); See p.3-9 of D210/D211 User Manual
+        emit keySignal( 0172 );  // firmware code
         break;
 //    case 410:  // This is from p.3-17 of the D410 User Manual
 //        emit keySignal( 036 );  // Header 1

@@ -8,7 +8,8 @@ class Status {
 public:
     enum ConnectionType { DISCONNECTED, SERIAL_CONNECTED, TELNET_CONNECTED };
     enum EmulationType { D200 = 200,
-                         D210 = 210
+                         D210 = 210,
+                         D211 = 211
                        };
     int visLines, visCols;
     QString serialPort, remoteHost, remotePort;

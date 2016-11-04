@@ -22,11 +22,11 @@ public:
 
     static const unsigned char NUL			=  0;
     static const unsigned char PRINT_FORM	=  1;
-
+    static const unsigned char REVERSE_VIDEO_OFF = 2; // New from D210 onwards
     static const unsigned char BLINK_ENABLE =  3; // for the whole screen
     static const unsigned char BLINK_DISABLE =  4; // for the whole screen
     static const unsigned char READ_WINDOW_ADDR =  5; // REQUIRES RESPONSE
-
+    static const unsigned char ACK          =  6; // sent to host to indicate local print has completed
     static const unsigned char BELL 		=  7;
     static const unsigned char HOME			=  8; // window home
     static const unsigned char TAB 			=  9;
@@ -37,12 +37,12 @@ public:
     static const unsigned char BLINK_ON 	=  14;
     static const unsigned char BLINK_OFF 	=  15;
     static const unsigned char WRITE_WINDOW_ADDR =  16;
-    static const unsigned char PRINT_WINDOW	=  17;
+    static const unsigned char PRINT_SCREEN	=  17;
     static const unsigned char ROLL_ENABLE  =  18; // R
     static const unsigned char ROLL_DISABLE =  19; // S (!)
     static const unsigned char UNDERSCORE_ON = 20;
     static const unsigned char UNDERSCORE_OFF = 21;
-
+    static const unsigned char REVERSE_VIDEO_ON = 22; // New from D210 onwards
     static const unsigned char CURSOR_UP 	=  23;
     static const unsigned char CURSOR_RIGHT =  24;
     static const unsigned char CURSOR_LEFT 	=  25;

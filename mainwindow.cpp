@@ -131,6 +131,10 @@ void MainWindow::setD210emulation() {
     status->emulation = Status::D210;
 }
 
+void MainWindow::setD211emulation() {
+    status->emulation = Status::D211;
+}
+
 void MainWindow::resize() {
 
     ChangeSizeDialog *d = new ChangeSizeDialog( this );
@@ -307,6 +311,12 @@ void MainWindow::setupMenuBar() {
     action->setCheckable( true );
     action->setChecked( false );
     connect( action, SIGNAL( triggered() ), this, SLOT( setD210emulation() ) );
+    action->setActionGroup( emulationGroup );
+
+    action = menu->addAction( "D211" );
+    action->setCheckable( true );
+    action->setChecked( false );
+    connect( action, SIGNAL( triggered() ), this, SLOT( setD211emulation() ) );
     action->setActionGroup( emulationGroup );
 
     action = menu->addSeparator();

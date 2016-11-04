@@ -42,6 +42,7 @@ protected:
 private slots:
     void setD200emulation();
     void setD210emulation();
+    void setD211emulation();
     void resize();
     void selfTest();
     void toggleLogging();
