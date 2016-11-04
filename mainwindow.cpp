@@ -31,19 +31,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
     terminal = new Terminal( status );
 
-//    scrollArea = new QScrollArea();
-//    scrollArea->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
-//    scrollArea->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
-
     crt = new Crt( this, terminal );
     crt->setMinimumSize( terminal->visible_cols * Crt::CHAR_WIDTH, terminal->visible_lines * Crt::CHAR_HEIGHT * crt->zoom ); // was 800x576
-
-    //    scrollArea->setWidget( crt );
-    //    setCentralWidget( scrollArea );
-    //    scrollArea->verticalScrollBar()->setValue( scrollArea->verticalScrollBar()->maximum() );
-    //    // lock size of CRT widget
-    //    int sbWidth = style()->pixelMetric(QStyle::PM_ScrollBarExtent) + 2;
-    //    scrollArea->setFixedSize( (terminal->visible_cols * Crt::CHAR_WIDTH) + sbWidth, terminal->visible_lines * Crt::CHAR_HEIGHT * 1.750 );
 
     setCentralWidget( crt );
 
@@ -82,6 +71,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     connect( keyHandler, SIGNAL(startHoldingSignal()), terminal, SLOT(startBuffering()) );
     connect( keyHandler, SIGNAL(stopHoldingSignal()), terminal, SLOT(stopBuffering()) );
 
+}
+
+void MainWindow::focusInEvent( QFocusEvent* event) {
+    crt->installEventFilter( keyHandler );
+}
+
+void MainWindow::focusOutEvent( QFocusEvent * event ) {
+    crt->removeEventFilter( keyHandler );
 }
 
 void MainWindow::updateCrtIfDirty() {
@@ -223,7 +220,6 @@ void MainWindow::closeSerialPort() {
 void MainWindow::openNetworkPort() {
 
     NetworkConnectDialog *d = new NetworkConnectDialog( this );
-    crt->releaseKeyboard();
     if (d->exec()) {
         telnetConnection = new TelnetConnection( this );
         if (telnetConnection->openTelnetConnection( d->hostLineEdit->text(),
@@ -247,7 +243,6 @@ void MainWindow::openNetworkPort() {
         QMessageBox::critical( this, "Error", "Unable to connect to telnet server");
     }
     delete d;
-    crt->grabKeyboard();
 }
 
 void MainWindow::closeNetworkPort() {
@@ -277,8 +272,8 @@ void MainWindow::showAboutDialog() {
     QMessageBox::about( this,
                         "About DasherQ",
                         "<center><b>DasherQ</b><br<br>"
-                        "&copy; 2013-2015 Steve Merrony<br><br>"
-                        "Version 0.9<br><br>"
+                        "&copy; 2013-2016 Steve Merrony<br><br>"
+                        "Version 1.0a<br><br>"
                         "Please see<br>"
                         "<a href='http://www.stephenmerrony.co.uk/dg/'>http://www.stephenmerrony.co.uk/dg/</a><br>"
                         "for more information</center>" );

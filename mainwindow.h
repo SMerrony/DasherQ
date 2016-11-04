@@ -35,6 +35,10 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+protected:
+    void focusInEvent( QFocusEvent * );
+    void focusOutEvent( QFocusEvent * );
+
 private slots:
     void setD200emulation();
     void setD210emulation();
