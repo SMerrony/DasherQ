@@ -9,6 +9,7 @@
 #include <QMenu>
 #include <QMainWindow>
 #include <QScrollArea>
+#include <QSettings>
 #include <QTextStream>
 
 #include "crt.h"
@@ -23,6 +24,8 @@
 #include "terminal.h"
 
 const QString HELP_URL = "http://stephenmerrony.co.uk/dg/software/new-software/dasherq-terminal-emulator.html";
+const QString APP_NAME = "DasherQ";
+const QString ORG_NAME = "SMerrony";
 
 class MainWindow : public QMainWindow
 {
@@ -90,6 +93,8 @@ private:
 
     SerialConnection *serialConnection;
     TelnetConnection *telnetConnection;
+
+    QSettings *settings;
 
 };
 

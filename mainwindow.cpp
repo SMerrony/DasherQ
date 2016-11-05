@@ -20,7 +20,7 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
-    setWindowTitle( "DasherQ" );
+    setWindowTitle( APP_NAME );
 
     QIcon icon( ":/icons/DGlogoOrange.png" );
     setWindowIcon( icon );
@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     fromHostQ = new QQueue<unsigned char>();
 
     status = new Status();
+    settings = new QSettings( ORG_NAME, APP_NAME );
 
     terminal = new Terminal( status );
 
@@ -223,7 +224,7 @@ void MainWindow::closeSerialPort() {
 
 void MainWindow::openNetworkPort() {
 
-    NetworkConnectDialog *d = new NetworkConnectDialog( this );
+    NetworkConnectDialog *d = new NetworkConnectDialog( settings, this );
     if (d->exec()) {
         telnetConnection = new TelnetConnection( this );
         if (telnetConnection->openTelnetConnection( d->hostLineEdit->text(),
@@ -242,6 +243,8 @@ void MainWindow::openNetworkPort() {
             status->connection = Status::TELNET_CONNECTED;
             status->remoteHost = d->hostLineEdit->text();
             status->remotePort = d->portLineEdit->text();
+            settings->setValue( LAST_HOST_SETTING, d->hostLineEdit->text() );
+            settings->setValue( LAST_PORT_SETTING, d->portLineEdit->text() );
         }
     } else {
         QMessageBox::critical( this, "Error", "Unable to connect to telnet server");
