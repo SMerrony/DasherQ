@@ -2,6 +2,7 @@
 
 #include <QDesktopServices>
 #include <QFileDialog>
+#include <QFontDatabase>
 #include <QIcon>
 #include <QImage>
 #include <QMenuBar>
@@ -11,10 +12,12 @@
 #include <QScrollBar>
 #include <QSizePolicy>
 #include <QStatusBar>
+#include <QTextEdit>
 #include <QThread>
 #include <QTimer>
 #include <QToolBar>
 #include <QUrl>
+#include <QVBoxLayout>
 
 #include "mainwindow.h"
 
@@ -29,8 +32,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
     status = new Status();
     settings = new QSettings( ORG_NAME, APP_NAME );
+    history = new History();
 
-    terminal = new Terminal( status );
+    terminal = new Terminal( status, history );
 
     crt = new Crt( this, terminal );
     crt->setMinimumSize( terminal->visible_cols * Crt::CHAR_WIDTH, terminal->visible_lines * Crt::CHAR_HEIGHT * crt->zoom ); // was 800x576
@@ -127,6 +131,21 @@ void MainWindow::setD200emulation() {
     status->emulation = Status::D200;
 }
 
+void MainWindow::viewHistory() {
+    QDialog *historyDialog = new QDialog( this );
+    historyDialog->setWindowTitle( "DasherQ Terminal History" );
+    historyDialog->setMinimumWidth( 600 );
+    historyDialog->setMinimumHeight( 400 );
+    QVBoxLayout *dLayout = new QVBoxLayout( historyDialog );
+    QTextEdit *historyArea = new QTextEdit();
+    historyArea->setPlainText( history->fetchAllAsQString() );
+    historyArea->setFont( QFontDatabase::systemFont( QFontDatabase::FixedFont) );
+    historyArea->setReadOnly( true );
+    dLayout->addWidget( historyArea );
+    historyDialog->exec();
+    delete historyDialog;
+}
+
 void MainWindow::setD210emulation() {
     status->emulation = Status::D210;
 }
@@ -151,7 +170,6 @@ void MainWindow::resize() {
 //        int sbWidth = style()->pixelMetric(QStyle::PM_ScrollBarExtent) + 2;
 //        scrollArea->setFixedSize( (terminal->visible_cols * Crt::CHAR_WIDTH) + sbWidth, terminal->visible_lines * Crt::CHAR_HEIGHT * newZoom );
         this->adjustSize();
-//        scrollArea->verticalScrollBar()->setValue( scrollArea->verticalScrollBar()->maximum() );
     }
     delete d;
 }
@@ -306,6 +324,10 @@ void MainWindow::setupMenuBar() {
     menu->addAction( "Send File", this, SLOT(sendFile()));
     action = menu->addSeparator();
     menu->addAction( "&Quit", this, SLOT(close()));
+
+    menu = menuBar()->addMenu( "View" );
+    historyAction = menu->addAction( "View History" );
+    connect( historyAction, SIGNAL( triggered() ), this, SLOT( viewHistory() ) );
 
     menu = menuBar()->addMenu( "Emulation" );
 

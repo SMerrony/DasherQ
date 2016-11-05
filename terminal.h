@@ -5,12 +5,13 @@
 #include <QObject>
 
 #include "cell.h"
+#include "history.h"
 #include "status.h"
 
 class Terminal : public QObject {
     Q_OBJECT
 public:
-    explicit Terminal( Status * );
+    explicit Terminal( Status *, History * );
 
     static const int DEFAULT_COLS           = 80;
     static const int MAX_VISIBLE_COLS       = 135;
@@ -94,6 +95,7 @@ public slots:
 
 private:
     void sendModelID();
+    History *history;
 
 };
 

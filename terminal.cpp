@@ -6,9 +6,10 @@
 #include "terminal.h"
 #include "telnetconnection.h"
 
-Terminal::Terminal( Status *pStatus ){
+Terminal::Terminal( Status *pStatus, History *pHistory ){
     // get the shared objects
     status = pStatus;
+    history = pHistory;
 
     visible_lines = DEFAULT_LINES;
     visible_cols = DEFAULT_COLS;
@@ -95,8 +96,12 @@ void Terminal::eraseUnprotectedToEndOfScreen() {
 
 void Terminal::scrollUp( int rows ) {
     for (int times = 0; times < rows; times++) {
+        // store top line in history
+        QString line;
+        for (int c = 0; c < visible_cols; c++) line.append( display[0][c].charValue );
+        history->addLine( line );
         // move each char up a row
-        for (int r = 0; r < TOTAL_LINES; r++) {
+        for (int r = 1; r < TOTAL_LINES; r++) {
             for (int c = 0; c < visible_cols; c++) {
                 display[r-1][c].copy( display[r][c] );
             }

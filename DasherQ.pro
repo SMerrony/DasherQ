@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     telnetconnection.cpp \
     terminal.cpp \
     fkeymatrix.cpp \
-    changesizedialog.cpp
+    changesizedialog.cpp \
+    history.cpp
 
 HEADERS  += mainwindow.h \
     status.h \
@@ -39,7 +40,8 @@ HEADERS  += mainwindow.h \
     telnetconnection.h \
     terminal.h \
     fkeymatrix.h \
-    changesizedialog.h
+    changesizedialog.h \
+    history.h
 
 FORMS    +=
 

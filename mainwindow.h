@@ -45,6 +45,7 @@ protected:
     void focusOutEvent( QFocusEvent * );
 
 private slots:
+    void viewHistory();
     void setD200emulation();
     void setD210emulation();
     void setD211emulation();
@@ -87,7 +88,7 @@ private:
 
     // some menus/actions that we need access to
     QMenu *serialMenu, *networkMenu;
-    QAction *loggingAction, *resizeAction, *selfTestAction, *loadTemplateAction,
+    QAction *loggingAction, *historyAction, *resizeAction, *selfTestAction, *loadTemplateAction,
             *openSerialAction, *closeSerialAction,
             *openNetworkAction, *closeNetworkAction, *restartNetworkAction;
 
@@ -100,6 +101,7 @@ private:
     TelnetConnection *telnetConnection;
 
     QSettings *settings;
+    History *history;
 
 };
 
