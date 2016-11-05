@@ -23,9 +23,11 @@
 #include "telnetconnection.h"
 #include "terminal.h"
 
-const QString HELP_URL = "http://stephenmerrony.co.uk/dg/software/new-software/dasherq-terminal-emulator.html";
+const QString HELP_URL = "http://stephenmerrony.co.uk/dg/doku.php?id=software:newsoftware:dasherq";
 const QString APP_NAME = "DasherQ";
 const QString ORG_NAME = "SMerrony";
+const int BLINK_TIMER_MS = 500;
+const int CRT_REFRESH_MS = 50;
 
 class MainWindow : public QMainWindow
 {
@@ -53,6 +55,7 @@ private slots:
     void closeSerialPort();
     void openNetworkPort();
     void closeNetworkPort();
+    void restartNetworkPort();
     void showExternalHelp();
     void showAboutDialog();
     void updateCrtIfDirty();
@@ -84,7 +87,9 @@ private:
 
     // some menus/actions that we need access to
     QMenu *serialMenu, *networkMenu;
-    QAction *loggingAction, *resizeAction, *selfTestAction, *loadTemplateAction, *openSerialAction, *closeSerialAction, *openNetworkAction, *closeNetworkAction;
+    QAction *loggingAction, *resizeAction, *selfTestAction, *loadTemplateAction,
+            *openSerialAction, *closeSerialAction,
+            *openNetworkAction, *closeNetworkAction, *restartNetworkAction;
 
     QLabel *onlineStatusLabel, *connectionStatusLabel, *emulationStatusLabel;
 

@@ -57,12 +57,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     // refresh the "crt" regularly
     QTimer *updateCrtTimer = new QTimer( this );
     connect( updateCrtTimer, SIGNAL( timeout() ), this, SLOT( updateCrtIfDirty() ) );
-    updateCrtTimer->start( 34 ); // 17ms ~ 60Hz
+    updateCrtTimer->start( CRT_REFRESH_MS ); // 17ms ~ 60Hz
 
     // alternate the blink state every half-second
     QTimer *blinkTimer = new QTimer( this );
     connect( blinkTimer, SIGNAL( timeout() ), this, SLOT( updateBlinkState() ) );
-    blinkTimer->start( 500 );
+    blinkTimer->start( BLINK_TIMER_MS );
 
     // status bar
     setupStatusBar();
@@ -74,11 +74,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
 }
 
-void MainWindow::focusInEvent( QFocusEvent* event) {
+void MainWindow::focusInEvent( QFocusEvent * ) {
     crt->installEventFilter( keyHandler );
 }
 
-void MainWindow::focusOutEvent( QFocusEvent * event ) {
+void MainWindow::focusOutEvent( QFocusEvent * ) {
     crt->removeEventFilter( keyHandler );
 }
 
@@ -90,9 +90,8 @@ void MainWindow::updateCrtIfDirty() {
 }
 
 void MainWindow::updateBlinkState() {
-
     terminal->blinkState = ! terminal->blinkState;
-    crt->update();
+    status->dirty = true;
 }
 
 void MainWindow::toggleLogging() {
@@ -238,6 +237,7 @@ void MainWindow::openNetworkPort() {
             connect( telnetConnection, SIGNAL(hostDataSignal(QByteArray)), terminal, SLOT(processHostData(QByteArray)) );
             openNetworkAction->setEnabled( false );
             closeNetworkAction->setEnabled( true );
+            restartNetworkAction->setEnabled( true );
             selfTestAction->setEnabled( false );
             serialMenu->setEnabled( false );
             status->connection = Status::TELNET_CONNECTED;
@@ -263,12 +263,17 @@ void MainWindow::closeNetworkPort() {
     status->remoteHost = "";
     openNetworkAction->setEnabled( true );
     closeNetworkAction->setEnabled( false );
+    restartNetworkAction->setEnabled( false );
     serialMenu->setEnabled( true );
     selfTestAction->setEnabled( true );
     // resume local echoing
     connect( keyHandler, SIGNAL(keySignal(char)), this, SLOT(localEcho(char)) );
     connect( this, SIGNAL(hostDataSignal(QByteArray)), terminal, SLOT(processHostData(QByteArray)) );
     QMessageBox::information( this, "DasherQ", "Host Disconnected" );
+}
+
+void MainWindow::restartNetworkPort() {
+    if (!telnetConnection->restartTelnetConnection()) closeNetworkPort();
 }
 
 void MainWindow::showExternalHelp() {
@@ -349,6 +354,10 @@ void MainWindow::setupMenuBar() {
     closeNetworkAction = networkMenu->addAction( "&Disconnect" );
     connect( closeNetworkAction, SIGNAL( triggered() ), this, SLOT( closeNetworkPort() ) );
     closeNetworkAction->setEnabled( false );
+    action = menu->addSeparator();
+    restartNetworkAction = networkMenu->addAction( "&Restart" );
+    connect( restartNetworkAction, SIGNAL( triggered() ), this, SLOT( restartNetworkPort() ) );
+    restartNetworkAction->setEnabled( false );
 
     menu = menuBar()->addMenu( "&Help" );
     action = menu->addAction( "Online &Help" );

@@ -99,7 +99,7 @@ void KeyBoardHandler::fKeyEventHandler( QString text )  {
     myParent->setFocus();
 }
 
-bool KeyBoardHandler::eventFilter( QObject *obj, QEvent *event ) {
+bool KeyBoardHandler::eventFilter( QObject *, QEvent *event ) {
     // qDebug() << "Some event caught at " << QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:zzz");
     if (event->type() == QEvent::KeyRelease) {
         // qDebug() << "KeyRelease trapped";

@@ -17,6 +17,7 @@ bool TelnetConnection::openTelnetConnection( QString hostName, int portNum ) {
         connect( tcpSocket, SIGNAL( readyRead() ), this, SLOT( readTelnetData() ) );
         connect( tcpSocket, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( handleTelnetError( QAbstractSocket::SocketError ) ) );
         connect( this, SIGNAL( telnetClosed() ), parent, SLOT( closeNetworkPort() ) );
+        host = hostName; port = portNum;
         connected = true;
 
     } else {
@@ -48,6 +49,12 @@ void TelnetConnection::closeTelnetConnection() {
         tcpSocket->deleteLater();
     }
 
+}
+
+bool TelnetConnection::restartTelnetConnection() {
+    if (!connected) return false;
+    closeTelnetConnection();
+    return openTelnetConnection( host, port );
 }
 
 void TelnetConnection::handleTelnetError( QAbstractSocket::SocketError socketError ) {

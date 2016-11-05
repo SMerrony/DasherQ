@@ -108,8 +108,8 @@ void Terminal::scrollUp( int rows ) {
 
 void Terminal::selfTest() {
 
-    char testlineHRule1[] = "12345678901234567890123456789012345678901234567890123456789012345678901234567890";
-    char testlineHRule2[] = "         1         2         3         4         5         6         7         8";
+    char testlineHRule1[] = "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012";
+    char testlineHRule2[] = "         1         2         3         4         5         6         7         8         9         10        11        12        13";
     char testline1[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567489!\"$%^.";
     char testlineN[] = "3 Normal : ";
     char testlineD[] = "4 Dim    : ";
@@ -122,10 +122,10 @@ void Terminal::selfTest() {
     emit keySignal( ERASE_WINDOW );
     qba.append(ERASE_WINDOW);
 
-    qba.append( testlineHRule1 );
+    for (int c = 0; c < visible_cols; c++) qba.append( testlineHRule1[c] );
     qba.append( NL );
 
-    qba.append( testlineHRule2 );
+    for (int c = 0; c < visible_cols; c++) qba.append( testlineHRule2[c] );
     qba.append( NL );
 
     qba.append( testlineN );
@@ -169,7 +169,7 @@ void Terminal::selfTest() {
 
 void Terminal::processHostData( QByteArray hostDataBA ) {
 
-    bool skipChar;
+    bool skipChar = false;
     unsigned char ch;
 
     if (status->holding) {
@@ -594,7 +594,7 @@ void Terminal::processHostData( QByteArray hostDataBA ) {
 
     // something has arrived at the terminal - so set the screen status to dirty so that the crt will
     // redraw on its next cycle
-    status->dirty = true;
+    if (!skipChar) status->dirty = true;
 }
 
 /* once this signal is received all data is held in a QByteArray for later processing */

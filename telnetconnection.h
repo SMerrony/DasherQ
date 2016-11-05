@@ -11,11 +11,6 @@ class TelnetConnection : public QObject
 public:
     explicit TelnetConnection( QObject *pparent );
     bool connected;
-    struct Settings {
-        QString host;
-        int     port;
-    };
-    Settings settings;
 
     static const unsigned char CMD_SE = 240;
     static const unsigned char CMD_NOP = 241;
@@ -65,11 +60,14 @@ public slots:
     void readTelnetData();
     void writeCharTelnet( char );
     void closeTelnetConnection();
+    bool restartTelnetConnection();
     void handleTelnetError( QAbstractSocket::SocketError );
 
 private:
     QObject *parent;
     QTcpSocket *tcpSocket;
+    QString host;
+    int port;
 };
 
 #endif // TELNETCONNECTION_H
