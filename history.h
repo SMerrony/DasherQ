@@ -2,6 +2,7 @@
 #define HISTORY_H
 
 #include <QList>
+#include <QString>
 
 const int MAX_HISTORY_LINES = 2000;
 
