@@ -302,8 +302,8 @@ void MainWindow::showAboutDialog() {
     QMessageBox::about( this,
                         "About DasherQ",
                         "<center><b>DasherQ</b><br<br>"
-                        "&copy; 2013-2016 Steve Merrony<br><br>"
-                        "Version 1.0a<br><br>"
+                        "&copy; 2013-2017 Steve Merrony<br><br>"
+                        "Version 1.1<br><br>"
                         "Please see<br>"
                         "<a href='http://www.stephenmerrony.co.uk/dg/'>http://www.stephenmerrony.co.uk/dg/</a><br>"
                         "for more information</center>" );
