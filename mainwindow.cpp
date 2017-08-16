@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2013-2017 Stephen Merrony
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 #include <QDebug>
 
 #include <QDesktopServices>
@@ -21,7 +37,7 @@
 
 #include "mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
+MainWindow::MainWindow(QString hostArg, QWidget *parent) : QMainWindow(parent) {
 
     setWindowTitle( APP_NAME );
 
@@ -75,6 +91,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     connect( keyHandler, SIGNAL(localPrintRequest()), this, SLOT(localPrintRequest()) );
     connect( keyHandler, SIGNAL(startHoldingSignal()), terminal, SLOT(startBuffering()) );
     connect( keyHandler, SIGNAL(stopHoldingSignal()), terminal, SLOT(stopBuffering()) );
+
+    if (hostArg.length() > 0) {
+
+        QStringList hl = hostArg.split( ':' );
+        qDebug()  << "Will attempt to connect to " + hl.at(0) + " port " +hl.at(1);
+        openRemote( hl.at(0), hl.at(1) );
+    } else {
+        qDebug() << "No remote host specified";
+    }
 
 }
 
@@ -239,33 +264,37 @@ void MainWindow::closeSerialPort() {
     QMessageBox::information( this, "DasherQ", "Connection Terminated" );
 }
 
+void MainWindow::openRemote( QString host, QString port) {
+    telnetConnection = new TelnetConnection( this );
+    if (telnetConnection->openTelnetConnection( host,
+                                                port.toInt() )) {
+        // stop local echoing
+        disconnect( keyHandler, SIGNAL(keySignal(char)), this, SLOT(localEcho(char)) );
+        disconnect( this, SIGNAL(hostDataSignal(QByteArray)), terminal, SLOT(processHostData(QByteArray)) );
+
+        connect( terminal, SIGNAL(keySignal(char)), telnetConnection, SLOT(writeCharTelnet(char)) );
+        connect( keyHandler, SIGNAL(keySignal(char)), telnetConnection, SLOT(writeCharTelnet(char)) );
+        connect( telnetConnection, SIGNAL(hostDataSignal(QByteArray)), terminal, SLOT(processHostData(QByteArray)) );
+        openNetworkAction->setEnabled( false );
+        closeNetworkAction->setEnabled( true );
+        restartNetworkAction->setEnabled( true );
+        selfTestAction->setEnabled( false );
+        serialMenu->setEnabled( false );
+        status->connection = Status::TELNET_CONNECTED;
+        status->remoteHost = host;
+        status->remotePort = port;
+        settings->setValue( LAST_HOST_SETTING, host );
+        settings->setValue( LAST_PORT_SETTING, port );
+    } else {
+        QMessageBox::critical( this, "Error", "Unable to connect to telnet server");
+    }
+}
+
 void MainWindow::openNetworkPort() {
 
     NetworkConnectDialog *d = new NetworkConnectDialog( settings, this );
     if (d->exec()) {
-        telnetConnection = new TelnetConnection( this );
-        if (telnetConnection->openTelnetConnection( d->hostLineEdit->text(),
-                                                    d->portLineEdit->text().toInt() )) {
-            // stop local echoing
-            disconnect( keyHandler, SIGNAL(keySignal(char)), this, SLOT(localEcho(char)) );
-            disconnect( this, SIGNAL(hostDataSignal(QByteArray)), terminal, SLOT(processHostData(QByteArray)) );
-
-            connect( terminal, SIGNAL(keySignal(char)), telnetConnection, SLOT(writeCharTelnet(char)) );
-            connect( keyHandler, SIGNAL(keySignal(char)), telnetConnection, SLOT(writeCharTelnet(char)) );
-            connect( telnetConnection, SIGNAL(hostDataSignal(QByteArray)), terminal, SLOT(processHostData(QByteArray)) );
-            openNetworkAction->setEnabled( false );
-            closeNetworkAction->setEnabled( true );
-            restartNetworkAction->setEnabled( true );
-            selfTestAction->setEnabled( false );
-            serialMenu->setEnabled( false );
-            status->connection = Status::TELNET_CONNECTED;
-            status->remoteHost = d->hostLineEdit->text();
-            status->remotePort = d->portLineEdit->text();
-            settings->setValue( LAST_HOST_SETTING, d->hostLineEdit->text() );
-            settings->setValue( LAST_PORT_SETTING, d->portLineEdit->text() );
-        }
-    } else {
-        QMessageBox::critical( this, "Error", "Unable to connect to telnet server");
+        openRemote( d->hostLineEdit->text(), d->portLineEdit->text() );
     }
     delete d;
 }
@@ -303,7 +332,7 @@ void MainWindow::showAboutDialog() {
                         "About DasherQ",
                         "<center><b>DasherQ</b><br<br>"
                         "&copy; 2013-2017 Steve Merrony<br><br>"
-                        "Version 1.1<br><br>"
+                        "Version " + QString::number(VERSION) + "<br><br>"
                         "Please see<br>"
                         "<a href='http://www.stephenmerrony.co.uk/dg/'>http://www.stephenmerrony.co.uk/dg/</a><br>"
                         "for more information</center>" );

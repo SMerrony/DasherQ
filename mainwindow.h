@@ -26,6 +26,7 @@
 const QString HELP_URL = "http://stephenmerrony.co.uk/dg/doku.php?id=software:newsoftware:dasherq";
 const QString APP_NAME = "DasherQ";
 const QString ORG_NAME = "SMerrony";
+const double VERSION = 1.2;
 const int BLINK_TIMER_MS = 500;
 const int CRT_REFRESH_MS = 50;
 
@@ -37,7 +38,7 @@ class MainWindow : public QMainWindow
     QMenu *mainMenu, *emulationMenu;
     
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow( QString hostArg, QWidget *parent = 0);
     ~MainWindow();
 
 protected:
@@ -54,6 +55,7 @@ private slots:
     void toggleLogging();
     void openSerialPort();
     void closeSerialPort();
+    void openRemote( QString host, QString port);
     void openNetworkPort();
     void closeNetworkPort();
     void restartNetworkPort();
