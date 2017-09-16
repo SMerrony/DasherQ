@@ -63,9 +63,12 @@ void Terminal::resize( int lines, int cols ) {
 
 void Terminal::clearLine( int line ) {
     Q_ASSERT( line < TOTAL_LINES );
+    QString histLine;
     for (int cc = 0; cc < visible_cols; cc++) {
+        histLine.append( display[line][cc].charValue );
         display[line][cc].clearToSpace();
     }
+    history->addLine( histLine );
     inCommand = false;
     readingWindowAddressX = false;
     readingWindowAddressY = false;
