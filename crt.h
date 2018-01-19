@@ -16,8 +16,8 @@ class Crt : public QWidget
 public:
     explicit Crt(QWidget *parent, Terminal * );
 
-    static const int CHAR_WIDTH = 10;
-    static const int CHAR_HEIGHT = 12;
+    static const int CHAR_WIDTH_PX= 10;
+    static const int CHAR_HEIGHT_PX = 12;
     int rowOffset;
     float zoom;
 

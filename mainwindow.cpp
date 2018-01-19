@@ -53,7 +53,7 @@ MainWindow::MainWindow(QString hostArg, QWidget *parent) : QMainWindow(parent) {
     terminal = new Terminal( status, history );
 
     crt = new Crt( this, terminal );
-    crt->setMinimumSize( terminal->visible_cols * Crt::CHAR_WIDTH, terminal->visible_lines * Crt::CHAR_HEIGHT * crt->zoom ); // was 800x576
+    crt->setMinimumSize( terminal->visible_cols * Crt::CHAR_WIDTH_PX, terminal->visible_lines * Crt::CHAR_HEIGHT_PX * crt->zoom ); // was 800x576
 
     setCentralWidget( crt );
 
@@ -189,8 +189,8 @@ void MainWindow::resize() {
         terminal->resize( newLines, newCols );
         //crt->rowOffset = Terminal::TOTAL_LINES - terminal->visible_lines;
         crt->zoom = newZoom;
-        crt->setMinimumSize( terminal->visible_cols * Crt::CHAR_WIDTH,
-                             terminal->visible_lines * Crt::CHAR_HEIGHT * newZoom ); // was 800x576
+        crt->setMinimumSize( terminal->visible_cols * Crt::CHAR_WIDTH_PX,
+                             terminal->visible_lines * Crt::CHAR_HEIGHT_PX * newZoom ); // was 800x576
         // lock size of CRT widget
 //        int sbWidth = style()->pixelMetric(QStyle::PM_ScrollBarExtent) + 2;
 //        scrollArea->setFixedSize( (terminal->visible_cols * Crt::CHAR_WIDTH) + sbWidth, terminal->visible_lines * Crt::CHAR_HEIGHT * newZoom );

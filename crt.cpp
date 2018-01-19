@@ -40,7 +40,7 @@ void Crt::paintEvent( QPaintEvent * ) {
     QColor currColor;
 
 //    rowOffset = Terminal::TOTAL_LINES - terminal->visible_lines;
-    painter.setWindow(0,0, terminal->visible_cols * CHAR_WIDTH, terminal->visible_lines * CHAR_HEIGHT );
+    painter.setWindow(0,0, terminal->visible_cols * CHAR_WIDTH_PX, terminal->visible_lines * CHAR_HEIGHT_PX );
     //painter.setViewport(0,0, terminal->visible_cols * CHAR_WIDTH, Terminal::TOTAL_LINES * CHAR_HEIGHT * zoom );
     painter.setPen( fgColor );
     painter.setRenderHint( QPainter::Antialiasing );
@@ -50,16 +50,16 @@ void Crt::paintEvent( QPaintEvent * ) {
 
             // first fill the cell with the right background colour, then set the right foreground colour
             if (terminal->display[y][x].reverse) {
-                painter.fillRect( x * CHAR_WIDTH, (rowOffset + y) * CHAR_HEIGHT, CHAR_WIDTH, CHAR_HEIGHT, fgColor );
+                painter.fillRect( x * CHAR_WIDTH_PX, (rowOffset + y) * CHAR_HEIGHT_PX, CHAR_WIDTH_PX, CHAR_HEIGHT_PX, fgColor );
                 currColor = bgColor;
             } else {
-                painter.fillRect( x * CHAR_WIDTH, (rowOffset + y) * CHAR_HEIGHT, CHAR_WIDTH, CHAR_HEIGHT, bgColor );
+                painter.fillRect( x * CHAR_WIDTH_PX, (rowOffset + y) * CHAR_HEIGHT_PX, CHAR_WIDTH_PX, CHAR_HEIGHT_PX, bgColor );
                 currColor = fgColor;
             }
 
             // draw the character - but handle blinking
             if (terminal->blinking_enabled && terminal->blinkState && terminal->display[y][x].blink) {
-                painter.fillRect( x * CHAR_WIDTH, (rowOffset + y + 1) * CHAR_HEIGHT, CHAR_WIDTH, CHAR_HEIGHT, bgColor );
+                painter.fillRect( x * CHAR_WIDTH_PX, (rowOffset + y + 1) * CHAR_HEIGHT_PX, CHAR_WIDTH_PX, CHAR_HEIGHT_PX, bgColor );
                 continue; // nothing else to do for this cell if in a blanked blink cycle
             } else {
                 if (terminal->display[y][x].charValue > 31  && terminal->display[y][x].charValue < 128) {
@@ -79,7 +79,7 @@ void Crt::paintEvent( QPaintEvent * ) {
             // underscore
             if (terminal->display[y][x].underscore) {
                 painter.setPen( currColor );
-                painter.drawLine( x * CHAR_WIDTH, (rowOffset + y + 1) * CHAR_HEIGHT, (x + 1) * CHAR_WIDTH, (rowOffset + y + 1) * CHAR_HEIGHT );
+                painter.drawLine( x * CHAR_WIDTH_PX, (rowOffset + y + 1) * CHAR_HEIGHT_PX, (x + 1) * CHAR_WIDTH_PX, (rowOffset + y + 1) * CHAR_HEIGHT_PX );
             }
 
         } // end for x
@@ -87,7 +87,7 @@ void Crt::paintEvent( QPaintEvent * ) {
 
     // draw the cursor - if on-screen
     if (terminal->cursorX < terminal->visible_cols && terminal->cursorY < terminal->visible_lines) {
-        painter.fillRect( terminal->cursorX * CHAR_WIDTH, (rowOffset + terminal->cursorY) * CHAR_HEIGHT, CHAR_WIDTH, CHAR_HEIGHT, fgColor );
+        painter.fillRect( terminal->cursorX * CHAR_WIDTH_PX, (rowOffset + terminal->cursorY) * CHAR_HEIGHT_PX, CHAR_WIDTH_PX, CHAR_HEIGHT_PX, fgColor );
         // draw inverted character if present
         if (terminal->display[terminal->cursorY][terminal->cursorX].charValue != ' ') {
             drawReverseChar( &painter, terminal->cursorX, (rowOffset + terminal->cursorY), terminal->display[terminal->cursorY][terminal->cursorX].charValue );
@@ -97,19 +97,19 @@ void Crt::paintEvent( QPaintEvent * ) {
 
 inline void Crt::drawChar( QPainter *painter, int x, int y, unsigned char charValue ) {
     if ( bdfFont->map[charValue].loaded) {
-        painter->drawPixmap( x * CHAR_WIDTH , (rowOffset + y) * CHAR_HEIGHT, *(bdfFont->map[charValue].pixmap) );
+        painter->drawPixmap( x * CHAR_WIDTH_PX , (rowOffset + y) * CHAR_HEIGHT_PX, *(bdfFont->map[charValue].pixmap) );
     }
 }
 
 inline void Crt::drawDimChar( QPainter *painter, int x, int y, unsigned char charValue ) {
     if ( bdfFont->map[charValue].loaded) {
-        painter->drawPixmap( x * CHAR_WIDTH , (rowOffset + y) * CHAR_HEIGHT, *(bdfFont->map[charValue].dimPixmap) );
+        painter->drawPixmap( x * CHAR_WIDTH_PX , (rowOffset + y) * CHAR_HEIGHT_PX, *(bdfFont->map[charValue].dimPixmap) );
     }
 }
 
 inline void Crt::drawReverseChar( QPainter *painter, int x, int y, unsigned char charValue ) {
     if ( bdfFont->map[charValue].loaded) {
-        painter->drawPixmap( x * CHAR_WIDTH , (rowOffset + y) * CHAR_HEIGHT, *(bdfFont->map[charValue].reversePixmap) );
+        painter->drawPixmap( x * CHAR_WIDTH_PX , (rowOffset + y) * CHAR_HEIGHT_PX, *(bdfFont->map[charValue].reversePixmap) );
     }
 }
 
@@ -132,25 +132,25 @@ void Crt::print( QPrinter *printer ) {
 
             // first fill the cell with the right background colour, then set the right foreground colour
             if (terminal->display[y][x].reverse) {
-                pPainter.fillRect( x * CHAR_WIDTH, y * CHAR_HEIGHT, CHAR_WIDTH, CHAR_HEIGHT, fgColor );
+                pPainter.fillRect( x * CHAR_WIDTH_PX, y * CHAR_HEIGHT_PX, CHAR_WIDTH_PX, CHAR_HEIGHT_PX, fgColor );
             }
 
             if (terminal->display[y][x].charValue > 31  && terminal->display[y][x].charValue < 128) {
                 if (terminal->display[y][x].reverse) {
                     pPainter.setPen( bgColor );
-                    pPainter.drawText( x * CHAR_WIDTH, y * CHAR_HEIGHT, QString( terminal->display[y][x].charValue ) );
+                    pPainter.drawText( x * CHAR_WIDTH_PX, y * CHAR_HEIGHT_PX, QString( terminal->display[y][x].charValue ) );
                 } else if (terminal->display[y][x].dim) {
                     pPainter.setPen( Qt::gray );
-                    pPainter.drawText( x * CHAR_WIDTH, y * CHAR_HEIGHT, QString( terminal->display[y][x].charValue ) );
+                    pPainter.drawText( x * CHAR_WIDTH_PX, y * CHAR_HEIGHT_PX, QString( terminal->display[y][x].charValue ) );
                 } else {
                     pPainter.setPen( Qt::black );
-                    pPainter.drawText( x * CHAR_WIDTH, y * CHAR_HEIGHT, QString( terminal->display[y][x].charValue ) );
+                    pPainter.drawText( x * CHAR_WIDTH_PX, y * CHAR_HEIGHT_PX, QString( terminal->display[y][x].charValue ) );
                 }
             }
 
             // underscore
             if (terminal->display[y][x].underscore) {
-                pPainter.drawLine( x * CHAR_WIDTH, (y + 1) * CHAR_HEIGHT, (x + 1) * CHAR_WIDTH, (y + 1) * CHAR_HEIGHT );
+                pPainter.drawLine( x * CHAR_WIDTH_PX, (y + 1) * CHAR_HEIGHT_PX, (x + 1) * CHAR_WIDTH_PX, (y + 1) * CHAR_HEIGHT_PX );
             }
 
         } // end for x

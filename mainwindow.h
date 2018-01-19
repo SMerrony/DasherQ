@@ -26,7 +26,7 @@
 const QString HELP_URL = "http://stephenmerrony.co.uk/dg/doku.php?id=software:newsoftware:dasherq";
 const QString APP_NAME = "DasherQ";
 const QString ORG_NAME = "SMerrony";
-const double VERSION = 1.2;
+const double VERSION = 1.3;
 const int BLINK_TIMER_MS = 500;
 const int CRT_REFRESH_MS = 50;
 
