@@ -1,6 +1,8 @@
 # DasherQ
 DASHER Terminal Emulator (Qt version)
 
+*DASHERQ IS NO LONGER MAINTAINED - PLEASE CONSIDER USING https://github.com/SMerrony/DasherG INSTEAD.*
+
 DasherQ is a free terminal emulator for the Data General DASHER-series terminals.  It is written in C++/Qt5 and should
 build and run on all desktop platforms supported by that combination.
 
